@@ -7,6 +7,8 @@ import ModuloCalendario from './componentes/organismos/ModuloCalendario.jsx';
 import ModuloHoy from './componentes/organismos/ModuloHoy.jsx';
 import ModuloSemana from './componentes/organismos/ModuloSemana.jsx';
 import PanelHoy from './componentes/organismos/PanelHoy.jsx';
+import PanelConfiguracion from './componentes/organismos/PanelConfiguracion.jsx';
+import Cristal from './componentes/atomos/Cristal.jsx';
 import Fondo from './pruebas/Fondo.jsx';
 import Catalogo from './pruebas/Catalogo.jsx';
 
@@ -14,9 +16,12 @@ import Catalogo from './pruebas/Catalogo.jsx';
 const vistas = {
   '/modulo/hora': () => <ModuloHora />,
   '/modulo/calendario': (e) => <ModuloCalendario alto={!e.horaVisible} />,
-  '/modulo/hoy': (e) => <ModuloHoy tareas={tareasDeHoy(e.escenario)} panelAbierto={e.panelAbierto} ladoPanel={e.ladoPanel} />,
+  '/modulo/hoy': (e) => <ModuloHoy tareas={tareasDeHoy(e.escenario)} panelAbierto={e.panelAbierto} ladoPanel={e.ladoLateral} />,
   '/modulo/semana': () => <ModuloSemana />,
   '/panel/hoy': (e) => <PanelHoy tareas={tareasDeHoy(e.escenario)} />,
+  '/configuracion': (e) => <PanelConfiguracion estado={e} />,
+  '/identificar/1': () => <Cristal className="identificar"><span className="texto-hora">1</span></Cristal>,
+  '/identificar/2': () => <Cristal className="identificar"><span className="texto-hora">2</span></Cristal>,
   '/fondo': (e) => <Fondo estado={e} />,
   '/catalogo': () => <Catalogo />,
 };

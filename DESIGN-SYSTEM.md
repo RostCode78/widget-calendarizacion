@@ -1,6 +1,6 @@
 # Design System — Widget Calendarizacion
 
-**Versión:** 0.9 (módulos Hoy y Esta semana precisados en task-06)
+**Versión:** 0.10 (configuración desde la bandeja de Windows, task-07)
 **Estado:** los valores son un punto de partida. Se validan y ajustan en `task-01.md` con ejemplos reales. Lo que no esté aquí no está decidido.
 
 ## 1. Principios
@@ -146,6 +146,8 @@ Regla: el módulo del widget nunca crece ni se desplaza. Todo lo que no cabe se 
 ## 13. Configuración del widget
 
 - Panel de 520 px con cristal. Los cambios se aplican al instante, sin botón de guardar.
+- **Se abre desde un ícono en la bandeja de Windows** (junto al reloj): clic para abrir o cerrar; clic derecho muestra "Configuración" y "Salir". El widget no lleva ícono propio (decidido por Rost en task-07).
+- Si no hay segunda pantalla, la tarjeta Pantalla 2 dice "No conectada" y no se puede elegir.
 - **Pantalla:** dos tarjetas (Pantalla 1 principal y Pantalla 2 secundaria) y un enlace "Identificar pantallas" que muestra el número en cada monitor.
 - **Posición:** vista previa del monitor con cuadrícula de 3 × 3. Se toca una celda y el widget se alinea a ese punto. No hay arrastrar y soltar, para evitar desalineaciones.
 - **Módulos:** interruptor "Mostrar la hora". Con la hora oculta, el mini calendario ocupa toda la columna y suma un bloque "Próximo" con el siguiente evento, para no dejar huecos.

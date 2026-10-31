@@ -4,9 +4,9 @@
 
 ## Estado actual
 
-- **Última tarea completada:** `task-06.md` (widget en reposo con datos de ejemplo, 2026-10-31)
+- **Última tarea completada:** `task-07.md` (configuración: pantalla, posición y apariencia, 2026-10-31)
 - **Tarea en curso:** ninguna
-- **Siguiente tarea por hacer:** `task-07.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
+- **Siguiente tarea por hacer:** `task-08.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
 
 ## Pendientes y problemas abiertos
 
@@ -28,6 +28,36 @@
 - [ ] `task-07` y `task-12`: el Aviso y el Formulario / Nueva tarea traen su propia superficie con esquinas de 24 px, como en Figma. Cuando vivan en su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`).
 
 ## Historial
+
+### task-07 — Configuración: pantalla, posición y apariencia
+- **Fecha:** 2026-10-31
+- **Estado:** Completada
+- **Decisión de Rost:** la configuración se abre desde un ícono en la bandeja de Windows. Figma no tenía el "ícono discreto". `DESIGN-SYSTEM.md` pasa a v0.10 (sección 13).
+- **Qué se hizo:**
+  - **Panel / Configuración** (organismo `PanelConfiguracion`) igual al frame 13:543:
+    - **General:** Pantalla (tarjetas e "Identificar pantallas"), Posición (vista previa con la cuadrícula 3 × 3 sobre la miniatura del fondo de Windows), Apariencia y Módulos ("Mostrar la hora").
+    - **Cuentas:** Sección / Cuentas. Es solo diseño: "Conectar" de Notion pasa la fila a "pegar clave" con el cursor en el campo, y la clave no se guarda en ningún lado.
+  - **Cambios al instante:**
+    - El widget se mueve a la posición y pantalla elegidas.
+    - La configuración se abre del lado con más espacio, a 12 px del widget, centrada en vertical en el área útil.
+    - Se mueve y cambia de alto con una animación de 250 ms, que se apaga si Windows pide reducir animaciones.
+    - Abrir la configuración cierra la lista abierta y viceversa.
+  - **Guardado:**
+    - `%APPDATA%\calendarizacion\configuracion.json` guarda modo, hora visible, pantalla y posición de cada pantalla.
+    - Se escribe en un archivo aparte y se renombra, para no dejar un archivo a medias.
+  - **Bandeja:** ícono de calendario en lavanda; el clic abre y cierra la configuración, y el clic derecho muestra Configuración y Salir.
+  - **Una sola copia:** la app ya no puede abrirse dos veces.
+  - **Otros cambios:** el widget se recoloca si se conecta o desconecta una pantalla. La barra de pruebas suma un botón Configuración.
+- **Verificación:**
+  - **9 posiciones:** coinciden con la cuadrícula de la sección 16, y la configuración nunca tapa el widget. Las ventanas quedan a la izquierda en las columnas centro y derecha, y a la derecha en la izquierda.
+  - **Pantallas:** con la pantalla 2 en posición 1 y la pantalla 1 en posición 6, cada una recuerda la suya al ir y volver. Comprobado leyendo la posición real de las ventanas: x 1984, y 64 en la pantalla 2.
+  - **Reinicio:** al reiniciar la app, el widget vuelve a la pantalla 2, posición 1.
+  - **Otros:** pestaña Cuentas (alto 370, centrada), estado pegar clave, modo claro, "Identificar pantallas" con el número en los dos monitores, y el ícono de la bandeja abre y cierra la configuración.
+- **Qué falló:** nada pendiente.
+- **Notas:**
+  - Tu barra de tareas se oculta sola, así que el área útil mide 1080 px de alto y la fila de abajo queda en y = 540 (64 px sobre el borde), no en 492.
+  - La vista previa de Posición muestra el fondo estático de Windows, no el animado de Wallpaper Engine.
+- **Qué falta:** nada de esta tarea. Sigue `task-08`.
 
 ### task-06 — Widget en reposo con datos de ejemplo
 - **Fecha:** 2026-10-31

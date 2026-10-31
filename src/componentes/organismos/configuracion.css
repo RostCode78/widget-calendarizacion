@@ -1,0 +1,39 @@
+/* Panel / Configuración (Figma 13:543, 520 px). Llena su ventana; el alto sigue al contenido. */
+.config { height: auto; min-height: 100%; padding: 24px; }
+.config-contenido { display: flex; flex-direction: column; gap: 22px; }
+.config-encabezado { display: flex; align-items: center; justify-content: space-between; }
+.config-titulos { display: flex; flex-direction: column; gap: 2px; white-space: nowrap; }
+.config-titulos h1 { margin: 0; color: var(--ink-primary); }
+.config-titulos p { margin: 0; color: var(--ink-secondary); }
+.config-cerrar { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 16px; background: var(--glass-tint); color: var(--ink-secondary); }
+.config-pestanas { align-self: flex-start; }
+
+.config-seccion { display: flex; flex-direction: column; gap: 10px; }
+.config-seccion > h2 { margin: 0; color: var(--ink-secondary); }
+
+.config-tarjetas { display: flex; gap: 12px; }
+.config-tarjetas .tarjeta-pantalla { flex: 1; width: auto; min-width: 0; }
+.config-enlace { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; color: var(--accent); }
+
+/* Vista previa de la pantalla con la cuadrícula 3 × 3 de posiciones */
+.vista-previa {
+  position: relative; box-sizing: border-box; height: 265px; padding: 10px; border-radius: 12px;
+  border: 2px solid var(--line-soft); overflow: hidden;
+  background: var(--fondo-escritorio, none) center / cover no-repeat;
+}
+.vista-previa::before { content: ''; position: absolute; inset: 0; background: var(--glass-veil); }
+.vista-previa-cuadricula { position: relative; display: grid; grid-template: repeat(3, 1fr) / repeat(3, 1fr); gap: 8px; height: 100%; }
+.vista-previa .celda { width: auto; height: auto; }
+.config-leyenda { display: flex; align-items: center; justify-content: space-between; white-space: nowrap; }
+.config-leyenda > :first-child { color: var(--ink-primary); }
+.config-leyenda > :last-child { color: var(--ink-muted); }
+
+.selector-apariencia { display: flex; gap: 4px; padding: 4px; border-radius: var(--radius-pill); background: var(--glass-tint); border: 1px solid var(--line-soft); }
+.selector-apariencia .segmento { flex: 1; width: auto; }
+
+.config-fila { display: flex; align-items: center; justify-content: space-between; }
+.config-fila .textos { flex: 0 1 auto; }
+.config .cuentas { width: auto; }
+
+/* "Identificar pantallas": el número grande de cada monitor */
+.identificar { display: flex; align-items: center; justify-content: center; }

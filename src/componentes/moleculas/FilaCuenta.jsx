@@ -28,7 +28,7 @@ export default function FilaCuenta({ icono, nombre, detalle, estado = 'sin-conec
           </p>
           <div className="fila-cuenta-clave">
             <CampoTexto
-              type="password" placeholder="Pega aquí la clave" aria-label={`Clave de ${nombre}`} autoComplete="off"
+              type="password" placeholder="Pega aquí la clave" aria-label={`Clave de ${nombre}`} autoComplete="off" autoFocus
               value={clave} onChange={(e) => alCambiarClave?.(e.target.value)} enfocado={enfocado}
             />
             <Boton onClick={alConectar}>Conectar</Boton>

@@ -4,6 +4,9 @@ contextBridge.exposeInMainWorld('widget', {
   leerEstado: () => ipcRenderer.invoke('estado:leer'),
   cambiar: (parcial) => ipcRenderer.send('estado:cambiar', parcial),
   alCambiarEstado: (fn) => ipcRenderer.on('estado', (_e, estado) => fn(estado)),
+  altoConfiguracion: (alto) => ipcRenderer.send('configuracion:alto', alto),
+  identificarPantallas: () => ipcRenderer.send('pantallas:identificar'),
+  fondoDeEscritorio: () => ipcRenderer.invoke('escritorio:fondo'),
   alternarCatalogo: () => ipcRenderer.send('catalogo:alternar'),
   cerrar: () => ipcRenderer.send('app:cerrar'),
 });

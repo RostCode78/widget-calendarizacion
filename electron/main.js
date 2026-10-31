@@ -1,19 +1,29 @@
-import { app, BrowserWindow, ipcMain, nativeTheme, screen } from 'electron';
+import { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage, nativeTheme, screen, systemPreferences } from 'electron';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pegarAlEscritorio, MENSAJE_EXPLORADOR } from './escritorio.js';
+import { leerConfiguracion, guardarConfiguracion } from './configuracion.js';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const devUrl = process.env.VITE_DEV_SERVER_URL;
 const pruebas = Boolean(devUrl) || process.argv.includes('--pruebas');
 
-// Estado que comparten todas las ventanas. `escenario` elige los datos de ejemplo (task-06).
-const estado = { modo: 'oscuro', escenario: 'normal', horaVisible: true, panelAbierto: false, ladoPanel: 'izquierda' };
+// Estado que comparten todas las ventanas. Lo guardable viene de configuracion.json;
+// `escenario` elige los datos de ejemplo (task-06) hasta que lleguen los datos reales.
+const estado = {
+  ...leerConfiguracion(),
+  escenario: 'normal',
+  panelAbierto: false,
+  configAbierta: false,
+  ladoLateral: 'izquierda',
+  hayPantalla2: false,
+};
 
 // El cristal de Windows toma su tinte del tema: debe seguir al modo del widget, no al del sistema.
 const temaWindows = () => (nativeTheme.themeSource = estado.modo === 'oscuro' ? 'dark' : 'light');
 
-// Cada vista es la misma app con otra ruta (#/modulo/hoy, #/catalogo...).
+// Cada vista es la misma app con otra ruta (#/modulo/hoy, #/configuracion...).
 function cargar(win, ruta) {
   if (devUrl) win.loadURL(`${devUrl}#${ruta}`);
   else win.loadFile(path.join(dir, '../dist/index.html'), { hash: ruta });
@@ -37,7 +47,7 @@ export function ventanaCristal({ ruta, ...opciones }) {
   return win;
 }
 
-// ---- Widget en reposo: una ventana por módulo (640 × 476, DESIGN-SYSTEM sección 16) ----
+// ---- Pantallas y posiciones (DESIGN-SYSTEM sección 16) ----
 
 const WIDGET = { width: 640, height: 476 };
 const MODULOS = {
@@ -47,14 +57,20 @@ const MODULOS = {
   semana: { x: 300, y: 284, width: 340, height: 192 },
 };
 const PANEL = { width: 340, height: 680 };
-const posicion = 6; // Se elige en la configuración (task-07); el diseño usa la 6.
-const ventanas = {};
-let fondo = null;
-let panel = null;
+const CONFIG_ANCHO = 520;
 
-// Esquina superior izquierda del widget en la posición 1–9 de la cuadrícula 3 × 3.
-function origenWidget(display) {
-  const { bounds: b, workArea: wa } = display;
+// Pantalla 1 = la principal; Pantalla 2 = la otra. Sin segunda pantalla, se usa la 1.
+function pantalla(numero) {
+  const principal = screen.getPrimaryDisplay();
+  const otra = screen.getAllDisplays().find((d) => d.id !== principal.id);
+  return numero === 2 && otra ? otra : principal;
+}
+
+// Esquina superior izquierda del widget en la posición 1–9. Margen de 64 px al borde y
+// la fila de abajo respeta la barra de tareas; en 1920 × 1080 da x 64/640/1216, y 64/302/492.
+function origenWidget() {
+  const { bounds: b, workArea: wa } = pantalla(estado.pantalla);
+  const posicion = estado.posiciones[estado.pantalla];
   const columna = (posicion - 1) % 3;
   const fila = Math.floor((posicion - 1) / 3);
   const x = [b.x + 64, b.x + (b.width - WIDGET.width) / 2, b.x + b.width - 64 - WIDGET.width][columna];
@@ -66,6 +82,49 @@ function limites(nombre, origen) {
   const m = nombre === 'calendario' && !estado.horaVisible ? { ...MODULOS.calendario, y: 0, height: WIDGET.height } : MODULOS[nombre];
   return { x: origen.x + m.x, y: origen.y + m.y, width: m.width, height: m.height };
 }
+
+// Ventanas laterales (lista abierta, configuración): hacia el lado con más espacio, a 12 px.
+// Con el widget en la columna izquierda van a la derecha; en el centro y la derecha, a la izquierda.
+function xLateral(origen, ancho) {
+  return origen.columna === 0 ? origen.x + WIDGET.width + 12 : origen.x - 12 - ancho;
+}
+
+function limitesPanel(origen) {
+  const wa = pantalla(estado.pantalla).workArea;
+  const centrado = origen.y + WIDGET.height / 2 - PANEL.height / 2;
+  const y = Math.min(Math.max(centrado, wa.y + 16), wa.y + wa.height - 16 - PANEL.height);
+  return { x: xLateral(origen, PANEL.width), y: Math.round(y), ...PANEL };
+}
+
+// La configuración se centra en vertical en el área útil de la pantalla, sin importar el widget.
+function limitesConfig(origen, alto) {
+  const wa = pantalla(estado.pantalla).workArea;
+  return { x: xLateral(origen, CONFIG_ANCHO), y: Math.round(wa.y + (wa.height - alto) / 2), width: CONFIG_ANCHO, height: alto };
+}
+
+// Mueve una ventana en 250 ms con curva suave, salvo que Windows pida reducir animaciones.
+function animar(win, destino) {
+  const inicio = win.getBounds();
+  if (!systemPreferences.getAnimationSettings().shouldRenderRichAnimation) return win.setBounds(destino);
+  const t0 = Date.now();
+  const paso = () => {
+    if (win.isDestroyed()) return;
+    const t = Math.min((Date.now() - t0) / 250, 1);
+    const k = t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
+    const v = (a, b) => Math.round(a + (b - a) * k);
+    win.setBounds({ x: v(inicio.x, destino.x), y: v(inicio.y, destino.y), width: v(inicio.width, destino.width), height: v(inicio.height, destino.height) });
+    if (t < 1) setTimeout(paso, 16);
+  };
+  paso();
+}
+
+// ---- Widget en reposo: una ventana por módulo ----
+
+const ventanas = {};
+let fondo = null;
+let panel = null;
+let config = null;
+let altoConfig = 816;
 
 // Pega una ventana del widget; el fondo de pruebas se vuelve a mandar debajo de todo.
 function pegar(win) {
@@ -81,8 +140,8 @@ function mostrarPegada(win) {
 }
 
 function crearWidget() {
-  const origen = origenWidget(screen.getPrimaryDisplay());
-  estado.ladoPanel = origen.columna === 0 ? 'derecha' : 'izquierda';
+  const origen = origenWidget();
+  estado.ladoLateral = origen.columna === 0 ? 'derecha' : 'izquierda';
   for (const nombre of Object.keys(MODULOS)) {
     // focusable: false → no recibe foco ni sube sobre otras ventanas al hacer clic.
     const win = ventanaCristal({ ruta: `/modulo/${nombre}`, focusable: false, ...limites(nombre, origen) });
@@ -97,15 +156,17 @@ function repegarTodo() {
   for (const win of [...Object.values(ventanas), panel]) if (win && !win.isDestroyed() && win.isVisible()) pegar(win);
 }
 
-// Lista abierta (sección 12 y 16): hacia el lado con más espacio, a 12 px, centrada con el widget.
+// Coloca el widget (y lo que cuelga de él) en la pantalla y posición actuales.
+function colocarWidget() {
+  const origen = origenWidget();
+  estado.ladoLateral = origen.columna === 0 ? 'derecha' : 'izquierda';
+  for (const [nombre, win] of Object.entries(ventanas)) win.setBounds(limites(nombre, origen));
+  if (panel) animar(panel, limitesPanel(origen));
+  if (config) animar(config, limitesConfig(origen, altoConfig));
+}
+
 function abrirPanel() {
-  const display = screen.getPrimaryDisplay();
-  const origen = origenWidget(display);
-  const wa = display.workArea;
-  const x = estado.ladoPanel === 'derecha' ? origen.x + WIDGET.width + 12 : origen.x - 12 - PANEL.width;
-  const centrado = origen.y + WIDGET.height / 2 - PANEL.height / 2;
-  const y = Math.min(Math.max(centrado, wa.y + 16), wa.y + wa.height - 16 - PANEL.height);
-  panel = ventanaCristal({ ruta: '/panel/hoy', focusable: false, x, y: Math.round(y), ...PANEL });
+  panel = ventanaCristal({ ruta: '/panel/hoy', focusable: false, ...limitesPanel(origenWidget()) });
   mostrarPegada(panel);
   panel.on('closed', () => {
     panel = null;
@@ -113,22 +174,69 @@ function abrirPanel() {
   });
 }
 
-// Aplica a las ventanas lo que cambió y avisa a todas.
+// Configuración: ventana normal (sí recibe foco: tiene campos). Esc o la X la cierran.
+function abrirConfig() {
+  config = ventanaCristal({ ruta: '/configuracion', ...limitesConfig(origenWidget(), altoConfig) });
+  config.once('ready-to-show', () => config.show());
+  config.on('closed', () => {
+    config = null;
+    if (estado.configAbierta) cambiar({ configAbierta: false });
+  });
+}
+
+// Aplica a las ventanas lo que cambió, guarda lo guardable y avisa a todas.
 function cambiar(parcial) {
-  const antes = { ...estado };
+  const antes = { ...estado, posiciones: { ...estado.posiciones } };
   Object.assign(estado, parcial);
+  // Las ventanas laterales van una a la vez: abrir una cierra la otra (sección 16).
+  if (parcial.configAbierta) estado.panelAbierto = false;
+  if (parcial.panelAbierto) estado.configAbierta = false;
+
   if (estado.modo !== antes.modo) temaWindows();
   if (estado.horaVisible !== antes.horaVisible) {
-    const origen = origenWidget(screen.getPrimaryDisplay());
-    ventanas.calendario.setBounds(limites('calendario', origen));
     if (estado.horaVisible) {
       ventanas.hora.showInactive();
       pegar(ventanas.hora);
     } else ventanas.hora.hide();
   }
+  const seMovio = estado.pantalla !== antes.pantalla
+    || estado.posiciones[estado.pantalla] !== antes.posiciones[estado.pantalla]
+    || estado.horaVisible !== antes.horaVisible;
+  if (seMovio) colocarWidget();
+
   if (estado.panelAbierto && !panel) abrirPanel();
   if (!estado.panelAbierto && panel) panel.close();
+  if (estado.configAbierta && !config) abrirConfig();
+  if (!estado.configAbierta && config) config.close();
+
+  guardarConfiguracion(estado);
   for (const w of BrowserWindow.getAllWindows()) w.webContents.send('estado', estado);
+}
+
+// "Identificar pantallas": un número grande en cada monitor durante 3 segundos.
+function identificarPantallas() {
+  const principal = screen.getPrimaryDisplay();
+  const otras = screen.getAllDisplays().filter((d) => d.id !== principal.id);
+  [principal, ...otras.slice(0, 1)].forEach((d, i) => {
+    const { x, y, width, height } = d.workArea;
+    const win = ventanaCristal({ ruta: `/identificar/${i + 1}`, focusable: false, alwaysOnTop: true, x: x + width / 2 - 80, y: y + height / 2 - 80, width: 160, height: 160 });
+    win.once('ready-to-show', () => win.showInactive());
+    setTimeout(() => !win.isDestroyed() && win.close(), 3000);
+  });
+}
+
+// Miniatura del fondo de escritorio de Windows para la vista previa de Posición.
+function fondoDeEscritorio() {
+  const archivo = path.join(app.getPath('appData'), 'Microsoft/Windows/Themes/TranscodedWallpaper');
+  if (!fs.existsSync(archivo)) return null;
+  const imagen = nativeImage.createFromPath(archivo);
+  return imagen.isEmpty() ? null : imagen.resize({ width: 480 }).toDataURL();
+}
+
+function actualizarPantallas() {
+  const hay = screen.getAllDisplays().length > 1;
+  if (hay !== estado.hayPantalla2) cambiar({ hayPantalla2: hay });
+  else colocarWidget();
 }
 
 // ---- Página interna de pruebas: un fondo de Figma debajo del widget y el catálogo aparte ----
@@ -151,13 +259,45 @@ function alternarCatalogo() {
   catalogo.on('closed', () => (catalogo = null));
 }
 
+// ---- Bandeja de Windows: abre la configuración (decidido por Rost en task-07) ----
+
+let bandeja = null;
+
+function crearBandeja() {
+  bandeja = new Tray(path.join(dir, 'icono-bandeja.png'));
+  bandeja.setToolTip('Calendarizacion');
+  bandeja.setContextMenu(Menu.buildFromTemplate([
+    { label: 'Configuración', click: () => cambiar({ configAbierta: true }) },
+    { type: 'separator' },
+    { label: 'Salir', click: () => app.quit() },
+  ]));
+  bandeja.on('click', () => cambiar({ configAbierta: !estado.configAbierta }));
+}
+
 ipcMain.handle('estado:leer', () => estado);
 ipcMain.on('estado:cambiar', (_e, parcial) => cambiar(parcial));
+ipcMain.on('configuracion:alto', (_e, alto) => {
+  altoConfig = Math.round(alto);
+  if (config) animar(config, limitesConfig(origenWidget(), altoConfig));
+});
+ipcMain.on('pantallas:identificar', identificarPantallas);
+ipcMain.handle('escritorio:fondo', fondoDeEscritorio);
 ipcMain.on('catalogo:alternar', alternarCatalogo);
 ipcMain.on('app:cerrar', () => app.quit());
 
+// Una sola copia del widget a la vez.
+if (!app.requestSingleInstanceLock()) app.quit();
+
 app.whenReady().then(() => {
+  estado.hayPantalla2 = screen.getAllDisplays().length > 1;
   temaWindows();
   if (pruebas) abrirPruebas();
   crearWidget();
+  crearBandeja();
+  screen.on('display-added', actualizarPantallas);
+  screen.on('display-removed', actualizarPantallas);
+  screen.on('display-metrics-changed', colocarWidget);
 });
+
+// El widget vive aunque se cierre la configuración o la lista; se sale desde la bandeja.
+app.on('window-all-closed', () => {});

@@ -27,6 +27,8 @@
 .icono-cerrar-panel { width: 12px; height: 12px; mask-image: url(../iconos/cerrar-panel.svg); mask-size: 12px 12px; }
 .icono-manana { width: 14px; height: 14px; mask-image: url(../iconos/manana.svg); mask-size: 14px 14px; }
 .icono-tarde { width: 14px; height: 14px; mask-image: url(../iconos/tarde.svg); mask-size: 14px 14px; }
+.icono-cerrar-config { width: 14px; height: 14px; mask-image: url(../iconos/cerrar-config.svg); mask-size: 14px 14px; }
+.icono-ojo { width: 16px; height: 16px; mask-image: url(../iconos/ojo.svg); mask-size: 16px 16px; }
 .icono-noche { width: 14px; height: 14px; mask-image: url(../iconos/noche.svg); mask-size: 14px 14px; }
 
 /* Foco visible para todo lo que se usa con teclado. */

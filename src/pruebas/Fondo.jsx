@@ -28,6 +28,7 @@ export default function Fondo({ estado }) {
         {ESCENARIOS.map((e) => boton(estado.escenario === e.id, e.texto, () => cambiar({ escenario: e.id, panelAbierto: false })))}
         {boton(!estado.horaVisible, 'Ocultar hora', () => cambiar({ horaVisible: !estado.horaVisible }))}
         <span className="separador" />
+        {boton(estado.configAbierta, 'Configuración', () => cambiar({ configAbierta: !estado.configAbierta }))}
         <button onClick={() => window.widget.alternarCatalogo()}>Catálogo</button>
         <button onClick={() => window.widget.cerrar()}>Cerrar</button>
       </nav>
