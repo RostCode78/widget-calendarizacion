@@ -4,9 +4,9 @@
 
 ## Estado actual
 
-- **Última tarea completada:** `task-07.md` (configuración: pantalla, posición y apariencia, 2026-10-31)
+- **Última tarea completada:** `task-08.md` (conectar con Notion, 2026-10-31)
 - **Tarea en curso:** ninguna
-- **Siguiente tarea por hacer:** `task-08.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
+- **Siguiente tarea por hacer:** `task-09.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
 
 ## Pendientes y problemas abiertos
 
@@ -28,6 +28,40 @@
 - [ ] `task-07` y `task-12`: el Aviso y el Formulario / Nueva tarea traen su propia superficie con esquinas de 24 px, como en Figma. Cuando vivan en su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`).
 
 ## Historial
+
+### task-08 — Conectar con Notion (tareas)
+- **Fecha:** 2026-10-31
+- **Estado:** Completada
+- **Decisiones de Rost:** base **Tareas de carrera**, con **Fecha de trabajo** como día y horas (inicio y cierre). La otra opción era "Mis Tareas" (con "Fecha límite"). `DESIGN-SYSTEM.md` pasa a v0.11 (sección 19).
+- **Qué se hizo:**
+  - **Clave (`electron/credenciales.js`):** se guarda en el Administrador de credenciales de Windows con koffi (CredWriteW / CredReadW / CredDeleteW), sin dependencias nuevas.
+  - **API de Notion (`electron/notion.js`):**
+    - Versión 2025-09-03.
+    - Busca entre lo compartido la base que tenga Tarea, Estado y Fecha de trabajo.
+    - Lee las tareas de hoy y los próximos 6 días (con paginación) y escribe el Estado.
+    - Distingue "sin conexión", "clave", "sin base" y "servicio".
+  - **Sincronización (`electron/tareas.js`):**
+    - Guarda en el equipo lo último leído, para usarlo sin internet.
+    - Guarda una cola de cambios de estado: se ven al instante, se reintentan en cada lectura y se descartan si la página ya no existe.
+    - Lee cada 2 minutos, al despertar el equipo y al desbloquearlo.
+  - **Cuentas:** Conectar → pegar clave → se valida → la fila queda "Conectada · Base: Tareas de carrera" y aparece Desconectar. Los errores se explican en la propia fila.
+  - **Módulo Hoy y lista abierta:**
+    - Muestran las tareas reales de hoy, con chip y barra de progreso calculados de ellas.
+    - El círculo marca la tarea como hecha o la regresa a pendiente.
+    - Las tareas sin hora van primero y en la franja "Mañana".
+    - Si algo falla, aparece un aviso discreto junto a "Hoy".
+  - **Página de pruebas:** el escenario por defecto es "Notion" (datos reales); los de ejemplo siguen en la barra.
+- **Verificación:**
+  - **Simulada:**
+    - Cliente de Notion con respuestas simuladas: rango, solo hora, sin hora, sin internet y clave mala.
+    - Prueba aislada de la cola sin internet: la tarea sigue hecha en el widget y se envía a Notion al volver la conexión.
+  - **Con tu Notion real:**
+    - Las 10 tareas de esta semana coinciden con la base (consultada aparte), y el widget muestra las 3 de hoy.
+    - Marcar "Portafolio: entrada de Aztlan App" la cambió a Hecha en Notion; desmarcarla la regresó a Pendiente, donde quedó.
+- **Qué falló:**
+  - El primer intento de la prueba sin internet se colgó por un error de sintaxis en el script de prueba (no en la app); se corrigió y pasó.
+  - No se cortó el internet real del equipo; la parte sin conexión se probó con Notion simulado.
+- **Qué falta:** nada de esta tarea. "En curso" se escribe desde los avisos (task-10/11); el código ya lo soporta. Sigue `task-09`.
 
 ### task-07 — Configuración: pantalla, posición y apariencia
 - **Fecha:** 2026-10-31

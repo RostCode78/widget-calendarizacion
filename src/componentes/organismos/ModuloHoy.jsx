@@ -3,14 +3,14 @@ import '../atomos/atomos.css';
 import Cristal from '../atomos/Cristal.jsx';
 import BotonIcono from '../atomos/BotonIcono.jsx';
 import { cambiar } from '../../estado.js';
-import { ChipPendientes, FilaTarea, Progreso, ordenarPorHora } from './hoy.jsx';
+import { ChipPendientes, FilaTarea, Progreso, TituloHoy, ordenarPorHora } from './hoy.jsx';
 import './modulos.css';
 
 const VISIBLES = 4;
 const MUCHAS = 7; // Desde 7 tareas: barra de progreso y "Ver N más" (decidido por Rost en task-06).
 
 // Módulo Hoy (sección 12): normal, vacío y muchas tareas. Nunca crece; lo que no cabe va al panel.
-export default function ModuloHoy({ tareas, panelAbierto, ladoPanel, alNuevaTarea }) {
+export default function ModuloHoy({ tareas, aviso, panelAbierto, ladoPanel, alNuevaTarea }) {
   const lista = ordenarPorHora(tareas);
   const ocultas = lista.length - VISIBLES;
   const muchas = lista.length >= MUCHAS;
@@ -21,7 +21,7 @@ export default function ModuloHoy({ tareas, panelAbierto, ladoPanel, alNuevaTare
   return (
     <Cristal className="modulo modulo-hoy">
       <div className="modulo-encabezado">
-        <span className="texto-titulo-modulo">Hoy</span>
+        <TituloHoy aviso={aviso} />
         <span className="modulo-derecha">
           <ChipPendientes tareas={lista} />
           <BotonIcono icono="mas" etiqueta="Nueva tarea" className="hoy-nueva" onClick={alNuevaTarea} />

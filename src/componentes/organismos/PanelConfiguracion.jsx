@@ -51,7 +51,7 @@ export default function PanelConfiguracion({ estado }) {
           </button>
         </div>
         <div className="config-pestanas"><Pestanas seccion={seccion} alCambiar={setSeccion} /></div>
-        {seccion === 'general' ? <General estado={estado} posicion={posicion} fondo={fondo} /> : <Cuentas />}
+        {seccion === 'general' ? <General estado={estado} posicion={posicion} fondo={fondo} /> : <Cuentas notion={estado.notion} />}
       </div>
     </Cristal>
   );
@@ -113,14 +113,40 @@ function General({ estado, posicion, fondo }) {
   );
 }
 
-// Pestaña Cuentas: solo el diseño. Las conexiones reales llegan en task-08 (Notion) y task-09
-// (Google Calendar); la clave escrita aquí no se guarda en ningún lado.
-function Cuentas() {
-  const [notion, setNotion] = useState('sin-conectar');
+// Mensajes cuando la clave de Notion no sirve. Se muestran en lugar de la nota de la fila.
+const ERRORES_NOTION = {
+  clave: 'La clave no es válida. Cópiala de nuevo desde Notion.',
+  'sin-base': 'La clave funciona, pero no ve la base «Tareas de carrera». Compártela con la integración desde Notion (••• › Conexiones).',
+  'sin-conexion': 'Sin conexión. Revisa tu internet e intenta de nuevo.',
+  servicio: 'Notion no respondió. Intenta de nuevo en un momento.',
+};
+
+// Pestaña Cuentas. Notion (task-08): la clave se valida y se guarda en el Administrador de
+// credenciales de Windows desde el proceso principal; aquí solo pasa de paso. Google llega en task-09.
+function Cuentas({ notion }) {
+  const [pegando, setPegando] = useState(false);
   const [clave, setClave] = useState('');
-  return (
-    <SeccionCuentas
-      notion={{ estado: notion, clave, alCambiarClave: setClave, alConectar: () => setNotion('pegar-clave') }}
-    />
-  );
+  const [conectando, setConectando] = useState(false);
+  const [error, setError] = useState(null);
+
+  const conectar = async () => {
+    if (!pegando) return setPegando(true);
+    if (!clave.trim() || conectando) return;
+    setConectando(true);
+    const resultado = await window.widget.conectarNotion(clave);
+    setConectando(false);
+    if (resultado.ok) {
+      setPegando(false);
+      setClave('');
+      setError(null);
+    } else setError(resultado.error);
+  };
+
+  const filaNotion = notion.conectada
+    ? { estado: 'conectada', detalle: `Base: ${notion.base}`, alDesconectar: () => window.widget.desconectarNotion() }
+    : {
+        estado: pegando ? 'pegar-clave' : 'sin-conectar',
+        clave, alCambiarClave: setClave, alConectar: conectar, conectando, error: ERRORES_NOTION[error],
+      };
+  return <SeccionCuentas notion={filaNotion} />;
 }

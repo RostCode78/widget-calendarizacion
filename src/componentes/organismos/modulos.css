@@ -4,6 +4,10 @@
 .modulo-encabezado { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; white-space: nowrap; }
 .modulo-encabezado > :first-child { color: var(--ink-secondary); }
 .modulo-derecha { display: flex; align-items: center; gap: 8px; }
+.hoy-titulo { display: flex; align-items: baseline; gap: 6px; }
+.hoy-titulo > .texto-titulo-modulo { color: var(--ink-secondary); }
+.hoy-aviso { color: var(--ink-muted); }
+button.tarea-marca { cursor: pointer; }
 .modulo-mas { padding: 4px 0 0 8px; color: var(--ink-muted); }
 button.modulo-mas { align-self: flex-start; }
 

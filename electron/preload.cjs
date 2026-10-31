@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld('widget', {
   altoConfiguracion: (alto) => ipcRenderer.send('configuracion:alto', alto),
   identificarPantallas: () => ipcRenderer.send('pantallas:identificar'),
   fondoDeEscritorio: () => ipcRenderer.invoke('escritorio:fondo'),
+  conectarNotion: (clave) => ipcRenderer.invoke('notion:conectar', clave),
+  desconectarNotion: () => ipcRenderer.send('notion:desconectar'),
+  marcarTarea: (id, estado) => ipcRenderer.send('tarea:marcar', id, estado),
   alternarCatalogo: () => ipcRenderer.send('catalogo:alternar'),
   cerrar: () => ipcRenderer.send('app:cerrar'),
 });

@@ -1,6 +1,6 @@
 # Design System — Widget Calendarizacion
 
-**Versión:** 0.10 (configuración desde la bandeja de Windows, task-07)
+**Versión:** 0.11 (Notion conectada, errores discretos y marcar desde la lista, task-08)
 **Estado:** los valores son un punto de partida. Se validan y ajustan en `task-01.md` con ejemplos reales. Lo que no esté aquí no está decidido.
 
 ## 1. Principios
@@ -285,6 +285,9 @@ Reglas:
 - **Notion** se conecta con una **integración interna**: al pulsar "Conectar" la fila pasa al estado **pegar-clave** (nota breve, campo "Pega aquí la clave" y botón "Conectar"). Decidido por Rost: no se usa el botón de autorizar, para no guardar una clave secreta dentro de la app. La clave se guarda en el Administrador de credenciales de Windows.
 - Vistas: Configuración · Cuentas (pegar clave de Notion).
 - Nota fija bajo la lista: "Tus claves se guardan de forma segura en este equipo."
+- **Notion conectada (task-08):** el texto de apoyo de la fila dice "Base: Tareas de carrera". Si la clave falla, el mensaje de error reemplaza la nota de pegar-clave, en color `alert` (clave no válida, base no compartida, sin conexión o Notion sin respuesta). Mientras valida, el botón dice "Conectando…".
+- **Errores en el widget:** nunca una pantalla de error. Junto al título "Hoy" aparece un aviso corto en `ink-muted`: "· sin conexión", "· Notion no responde", "· revisa la clave de Notion" o "· conecta Notion". El widget sigue mostrando lo último que leyó.
+- **Marcar desde la lista:** tocar el círculo de una tarea la marca como hecha, o la regresa a pendiente si ya lo estaba. "En curso" llega con el aviso de inicio (sección 17).
 - Íconos genéricos (calendario y documento); no se usan logotipos de terceros.
 - Vistas: Configuración · Cuentas, Cuentas (conectadas) y Cuentas (claro).
 

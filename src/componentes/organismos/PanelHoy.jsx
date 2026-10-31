@@ -2,7 +2,7 @@ import '../../estilos/iconos.css';
 import '../atomos/atomos.css';
 import Cristal from '../atomos/Cristal.jsx';
 import { cambiar } from '../../estado.js';
-import { ChipPendientes, FilaTarea, Progreso, ordenarPorHora } from './hoy.jsx';
+import { ChipPendientes, FilaTarea, Progreso, TituloHoy, ordenarPorHora } from './hoy.jsx';
 import './modulos.css';
 
 // Franjas del día por hora de inicio: mañana antes de las 12, tarde hasta las 19, noche después.
@@ -13,9 +13,9 @@ const FRANJAS = [
 ];
 
 // Panel / Hoy (lista completa): todas las tareas de hoy agrupadas por franja (sección 12).
-export default function PanelHoy({ tareas }) {
+export default function PanelHoy({ tareas, aviso }) {
   const lista = ordenarPorHora(tareas);
-  let desde = '00:00';
+  let desde = ''; // las tareas sin hora van con la mañana
   const grupos = FRANJAS.map((f) => {
     const de = desde;
     desde = f.hasta;
@@ -25,7 +25,7 @@ export default function PanelHoy({ tareas }) {
   return (
     <Cristal className="modulo panel-hoy">
       <div className="modulo-encabezado">
-        <span className="texto-titulo-modulo">Hoy</span>
+        <TituloHoy aviso={aviso} />
         <span className="modulo-derecha">
           <ChipPendientes tareas={lista} />
           <button type="button" className="foco panel-cerrar" aria-label="Cerrar lista" onClick={() => cambiar({ panelAbierto: false })}>

@@ -3,6 +3,7 @@ import { cambiar } from '../estado.js';
 import './pruebas.css';
 
 const ESCENARIOS = [
+  { id: 'real', texto: 'Notion' },
   { id: 'normal', texto: 'Normal' },
   { id: 'vacio', texto: 'Vacío' },
   { id: 'muchas', texto: 'Muchas' },

@@ -24,8 +24,28 @@ export function Progreso({ tareas }) {
 }
 
 // Una fila de tarea. El rango de horas solo se muestra mientras está en curso (sección 17).
+// Las tareas de Notion (con `id`) se marcan desde la lista: hecha ↔ pendiente.
 export function FilaTarea({ tarea }) {
   const estado = tarea.hecha ? 'hecha' : tarea.enCurso ? 'en-curso' : 'pendiente';
   const hora = tarea.enCurso && tarea.fin ? `${tarea.inicio} – ${tarea.fin}` : tarea.inicio;
-  return <Tarea texto={tarea.texto} hora={hora} estado={estado} />;
+  const alMarcar = tarea.id && (() => window.widget.marcarTarea(tarea.id, tarea.hecha ? 'pendiente' : 'hecha'));
+  return <Tarea texto={tarea.texto} hora={hora} estado={estado} alMarcar={alMarcar || undefined} />;
+}
+
+// Aviso discreto junto al título "Hoy" cuando Notion no responde (no es una pantalla de error).
+const AVISOS = {
+  'sin-conexion': 'sin conexión',
+  servicio: 'Notion no responde',
+  clave: 'revisa la clave de Notion',
+  'sin-base': 'revisa la base de Notion',
+};
+export const avisoNotion = (notion) => (notion.conectada ? AVISOS[notion.error] : 'conecta Notion');
+
+export function TituloHoy({ aviso }) {
+  return (
+    <span className="hoy-titulo">
+      <span className="texto-titulo-modulo">Hoy</span>
+      {aviso && <span className="texto-detalle hoy-aviso">· {aviso}</span>}
+    </span>
+  );
 }

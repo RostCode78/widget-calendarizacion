@@ -60,7 +60,7 @@ Nunca marques una tarea como completada si tiene fallos sin resolver. Márcala `
 
 ## Datos que usa el widget
 
-- **Tareas:** vienen de Notion.
+- **Tareas:** vienen de Notion (task-08). Base **Tareas de carrera** (elegida por Rost): `Tarea` (título), `Estado` (Pendiente / En curso / Hecha) y `Fecha de trabajo` (día; con hora = inicio, con rango = inicio y cierre). Integración interna con clave guardada en el Administrador de credenciales de Windows (`Calendarizacion/Notion`, vía `electron/credenciales.js`). API en `electron/notion.js`; sincronización, copia local (`notion-tareas.json`) y cola de cambios sin internet (`notion-pendientes.json`, ambos en `%APPDATA%\calendarizacion`) en `electron/tareas.js`. Lee hoy y los próximos 6 días cada 2 minutos y al despertar el equipo.
 - **Eventos:** vienen del calendario de Rost.
 - **Tecnología: Electron** (aprobada por Rost y probada en `task-03.md`, 2026-10-31). Es web (HTML, CSS, JavaScript), trae el cristal de Windows 11 listo y no requiere instalar nada más que Node.
 - Cómo se resolvió lo difícil (probado en Windows 11, build 26300, con dos monitores):

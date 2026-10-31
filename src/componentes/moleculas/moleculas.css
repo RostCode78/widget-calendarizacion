@@ -45,6 +45,7 @@
 }
 .fila-cuenta-encabezado { display: flex; align-items: center; gap: 12px; }
 .fila-cuenta-nota { margin: 0; color: var(--ink-secondary); }
+.fila-cuenta-error { color: var(--alert); }
 .fila-cuenta-clave { display: flex; align-items: center; gap: 8px; }
 .fila-cuenta-clave .campo { flex: 1; width: auto; min-width: 0; }
 
