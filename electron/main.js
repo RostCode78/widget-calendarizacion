@@ -34,7 +34,7 @@ export function ventanaCristal({ ruta, ...opciones }) {
   return win;
 }
 
-// Página interna de pruebas (task-04): un fondo a pantalla completa y muestras de cristal encima.
+// Página interna de pruebas: un fondo a pantalla completa y el catálogo de componentes en cristal encima.
 function abrirPruebas() {
   const { x, y, width, height } = screen.getPrimaryDisplay().bounds;
   const fondo = new BrowserWindow({ x, y, width, height, frame: false, show: false, webPreferences: preferencias });
@@ -42,8 +42,7 @@ function abrirPruebas() {
   fondo.once('ready-to-show', () => fondo.show());
   fondo.on('closed', () => app.quit());
 
-  ventanaCristal({ ruta: '/muestra/colores', parent: fondo, x: x + 160, y: y + 160, width: 400, height: 540 });
-  ventanaCristal({ ruta: '/muestra/texto', parent: fondo, x: x + 600, y: y + 160, width: 460, height: 540 });
+  ventanaCristal({ ruta: '/catalogo', parent: fondo, x: x + 40, y: y + 32, width: width - 80, height: height - 120 });
 }
 
 ipcMain.handle('modo:leer', () => modo);

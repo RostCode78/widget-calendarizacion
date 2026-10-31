@@ -1,0 +1,52 @@
+/* Moléculas (Figma: Design System › Moléculas). */
+
+/* Tarea: pendiente, en-curso, hecha */
+.tarea { display: flex; align-items: center; gap: var(--space-3); padding: 10px 8px; border-radius: var(--radius-item); }
+.tarea-marca { box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 20px; height: 20px; border-radius: 10px; color: var(--ink-on-accent); }
+.tarea-texto { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tarea-hora { flex-shrink: 0; white-space: nowrap; color: var(--ink-secondary); }
+.tarea-pendiente .tarea-marca { border: 1.5px solid var(--ink-secondary); }
+.tarea-hecha .tarea-marca { background: var(--done); }
+.tarea-hecha .tarea-texto, .tarea-hecha .tarea-hora { color: var(--ink-muted); }
+.tarea-en-curso { background: var(--accent-soft); }
+.tarea-en-curso .tarea-marca { background: var(--accent); }
+.tarea-en-curso .tarea-hora { color: var(--accent); }
+
+/* Evento */
+.evento { display: flex; align-items: center; gap: var(--space-3); padding: 6px 8px; white-space: nowrap; }
+.evento-dia { display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); }
+.evento-dia > :first-child { color: var(--accent); }
+.evento-texto { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.evento-hora { color: var(--ink-secondary); }
+
+/* Segmento */
+.segmento { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 120px; padding: 9px 12px; border-radius: var(--radius-pill); color: var(--ink-secondary); }
+.segmento[aria-pressed='true'] { background: var(--accent-soft); color: var(--accent); }
+
+/* Tarjeta pantalla */
+.tarjeta-pantalla {
+  box-sizing: border-box; display: flex; align-items: center; gap: 12px; width: 224px; padding: 14px; border-radius: var(--radius-item);
+  background: var(--glass-tint); border: 1px solid var(--line-soft); text-align: left; color: var(--ink-secondary);
+}
+.tarjeta-pantalla[aria-pressed='true'] { background: var(--accent-soft); border: 1.5px solid var(--accent); padding: 13.5px; color: var(--accent); }
+.tarjeta-pantalla-icono { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; background: var(--glass-tint); }
+.textos { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; white-space: nowrap; }
+.textos > :first-child { color: var(--ink-primary); }
+.textos > :last-child { color: var(--ink-secondary); }
+
+/* Campo con etiqueta */
+.campo-etiqueta { display: flex; flex-direction: column; gap: 6px; width: 220px; color: var(--ink-secondary); }
+.campo-etiqueta .campo { width: 100%; }
+
+/* Fila de cuenta: sin-conectar, pegar-clave, conectada */
+.fila-cuenta {
+  box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; width: 470px; padding: 12px 14px;
+  border-radius: var(--radius-item); background: var(--glass-tint); border: 1px solid var(--line-soft);
+}
+.fila-cuenta-encabezado { display: flex; align-items: center; gap: 12px; }
+.fila-cuenta-nota { margin: 0; color: var(--ink-secondary); }
+.fila-cuenta-clave { display: flex; align-items: center; gap: 8px; }
+.fila-cuenta-clave .campo { flex: 1; width: auto; min-width: 0; }
+
+/* Pestañas */
+.pestanas { display: inline-flex; gap: 4px; padding: 4px; border-radius: 22px; background: var(--glass-tint); }

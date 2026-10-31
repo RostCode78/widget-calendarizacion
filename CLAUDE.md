@@ -69,7 +69,7 @@ Nunca marques una tarea como completada si tiene fallos sin resolver. Márcala `
   - **Aviso:** `alwaysOnTop` nivel `screen-saver`, `focusable: false` y `showInactive()`. No quita el foco al aparecer ni al pulsar su botón.
   - **Dos monitores:** `screen.getAllDisplays()`; Pantalla 1 = la principal.
 - **Por dentro: React + Vite** (elegido por Rost en `task-04.md`). **Una ventana por módulo** con cristal real de Windows (elegido por Rost): las esquinas de cada ventana son de ~8 px, no de 24 px.
-- Estructura: `electron/` (ventanas, proceso principal), `src/estilos/tokens.css` (tokens en modo oscuro y claro, estilos de texto), `src/componentes/atomos|moleculas|organismos/`, `src/fuentes/` (Nunito y Quicksand, licencia libre), `src/pruebas/` (página interna de pruebas) y `src/public/fondos/` (los 5 fondos de prueba de Figma).
+- Estructura: `electron/` (ventanas, proceso principal), `src/estilos/tokens.css` (tokens en modo oscuro y claro, estilos de texto), `src/componentes/atomos|moleculas|organismos/`, `src/iconos/` (SVG de Figma; se pintan como máscara con `src/estilos/iconos.css` para que tomen el color del modo), `src/fuentes/` (Nunito y Quicksand, licencia libre), `src/pruebas/` (página interna de pruebas) y `src/public/fondos/` (los 5 fondos de prueba de Figma).
 - Comandos: `npm run dev` abre la página de pruebas con recarga al editar; `npm start` compila y abre.
 - El tinte del cristal de Windows sigue al modo del widget (`nativeTheme.themeSource`), no al tema del sistema.
 

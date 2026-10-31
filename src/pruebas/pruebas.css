@@ -15,13 +15,15 @@
 .controles button:focus-visible { outline: 2px solid #a9b8f2; outline-offset: 2px; }
 .separador { width: 1px; height: 16px; background: #ffffff33; }
 
-h1, p { margin: 0; }
+h1 { margin: 0; }
 .tono-secundario { color: var(--ink-secondary); }
 .tono-atenuado { color: var(--ink-muted); }
 .espacio { margin-top: var(--space-5); }
-.texto-tarea + .texto-detalle, .texto-detalle + .texto-detalle { margin-top: var(--space-1); }
 
-.muestras { list-style: none; margin: var(--space-3) 0; padding: 0; display: grid; gap: var(--space-2); }
-.muestras li { display: flex; align-items: center; gap: var(--space-3); }
-.muestra { width: 28px; height: 28px; border-radius: var(--radius-item); border: 1px solid var(--line-soft); }
-.boton-acento { display: inline-block; padding: 6px 16px; border-radius: var(--radius-pill); background: var(--accent); color: var(--ink-on-accent); }
+/* Catálogo de componentes (task-05) */
+.catalogo { overflow-y: auto; padding: 24px 32px; }
+.catalogo-grupo { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 24px 40px; margin-top: var(--space-3); }
+.catalogo-muestra { margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.catalogo-fila { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.catalogo-columna { display: flex; flex-direction: column; gap: 24px; }
+.catalogo-muestra .catalogo-columna { gap: 12px; }

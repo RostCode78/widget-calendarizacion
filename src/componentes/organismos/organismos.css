@@ -1,0 +1,36 @@
+/* Organismos (Figma: Design System › Organismos). Cada uno trae su propia superficie
+   (velo, borde y sombra), como en Figma; el desenfoque lo pone la ventana de Windows. */
+.superficie {
+  box-sizing: border-box;
+  border-radius: var(--radius-module);
+  border: 1px solid var(--line-soft);
+  background: var(--glass-veil);
+  box-shadow: 0 8px 24px #0000002e;
+}
+
+/* Aviso / Inicio y Aviso / Fin: 320 px, borde y fondo en alerta */
+.aviso {
+  display: flex; flex-direction: column; gap: 8px; width: 320px; padding: 16px;
+  border-color: var(--alert);
+  background: linear-gradient(var(--alert-soft), var(--alert-soft)), var(--glass-veil);
+}
+.aviso-fila { display: flex; align-items: center; justify-content: space-between; white-space: nowrap; }
+.aviso-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px 4px 9px; border-radius: var(--radius-pill); background: var(--alert-soft); color: var(--alert); }
+.aviso-detalle { color: var(--ink-secondary); }
+.aviso-titulo { margin: 0; color: var(--ink-primary); }
+.aviso .boton { padding: 8px 18px; }
+
+/* Formulario / Nueva tarea: 400 px */
+.nueva-tarea { display: flex; flex-direction: column; gap: 16px; width: 400px; padding: 24px; }
+.nueva-tarea-encabezado { display: flex; align-items: center; gap: 8px; }
+.nueva-tarea-encabezado h2 { flex: 1; margin: 0; }
+.nueva-tarea .campo-etiqueta { width: 100%; }
+.nueva-tarea-horas { display: flex; gap: 12px; }
+.nueva-tarea-horas .campo-etiqueta { flex: 1; min-width: 0; }
+.nueva-tarea-nota { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--ink-secondary); }
+.nueva-tarea-acciones { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* Seccion / Cuentas: 470 px */
+.cuentas { display: flex; flex-direction: column; gap: 12px; width: 470px; }
+.cuentas-titulo { margin: 0; color: var(--ink-secondary); }
+.cuentas-nota { margin: 0; color: var(--ink-muted); }

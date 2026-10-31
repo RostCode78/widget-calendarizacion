@@ -1,0 +1,60 @@
+/* Átomos (Figma: Design System › Átomos). Solo tokens; nada de colores sueltos. */
+/* :where() deja el reinicio sin peso, para que cada componente ponga su fondo, borde y relleno. */
+:where(button.foco) { font: inherit; margin: 0; padding: 0; border: 0; background: none; color: inherit; cursor: pointer; }
+
+/* Interruptor 44 × 26 */
+.interruptor { position: relative; width: 44px; height: 26px; border-radius: var(--radius-pill); background: var(--line-soft); transition: background var(--duracion); }
+.interruptor::after {
+  content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--ink-secondary); transition: transform var(--duracion), background var(--duracion);
+}
+.interruptor[aria-checked='true'] { background: var(--accent); }
+.interruptor[aria-checked='true']::after { transform: translateX(18px); background: var(--ink-on-accent); }
+
+/* Dia 36 × 34 */
+.dia { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 36px; height: 34px; border-radius: 10px; font: 400 13px/16px 'Nunito', sans-serif; color: var(--ink-primary); }
+.dia-punto { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); opacity: 0; }
+.dia-evento .dia-punto { opacity: 1; }
+.dia-hoy { background: var(--accent); color: var(--ink-on-accent); }
+.dia-hoy .dia-punto { background: var(--ink-on-accent); }
+.dia-fuera { color: var(--ink-muted); }
+
+/* Celda posicion 140 × 76 */
+.celda { box-sizing: border-box; display: flex; align-items: center; justify-content: center; width: 140px; height: 76px; border-radius: 10px; background: var(--glass-tint); border: 1px solid var(--line-soft); }
+.celda[aria-pressed='true'] { background: var(--accent-soft); border: 1.5px solid var(--accent); }
+.miniatura { display: flex; gap: 3px; }
+.miniatura > span { display: flex; flex-direction: column; gap: 3px; }
+.miniatura i { display: block; border-radius: 3px; background: var(--accent); }
+
+/* Boton: primario, alerta, secundario */
+.boton { display: inline-flex; align-items: center; justify-content: center; padding: 7px 16px; border-radius: var(--radius-pill); white-space: nowrap; }
+.boton-primario { background: var(--accent); color: var(--ink-on-accent); }
+.boton-alerta { background: var(--alert); color: var(--ink-on-accent); }
+.boton-secundario { background: var(--glass-tint); border: 1px solid var(--line-soft); color: var(--ink-primary); }
+
+/* Boton icono 32 × 32 */
+.boton-icono { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: var(--radius-pill); }
+.boton-icono-mas { background: var(--accent-soft); color: var(--accent); }
+.boton-icono-cerrar { background: var(--glass-tint); color: var(--ink-secondary); }
+
+/* Campo de texto */
+.campo {
+  box-sizing: border-box; width: 220px; padding: 10px 14px; border-radius: var(--radius-item);
+  background: var(--glass-tint); border: 1px solid var(--line-soft); color: var(--ink-primary); outline: none;
+  transition: border-color var(--duracion), box-shadow var(--duracion);
+}
+.campo::placeholder { color: var(--ink-muted); }
+/* Enfocado: borde de 1.5 px en acento sin mover el contenido. */
+.campo:focus, .campo-enfocado { border-color: var(--accent); box-shadow: 0 0 0 0.5px var(--accent); }
+
+/* Pestaña */
+.pestana { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: var(--radius-pill); color: var(--ink-secondary); }
+.pestana[aria-selected='true'] { background: var(--accent-soft); color: var(--accent); }
+
+/* Chip */
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 10px; border-radius: var(--radius-pill); white-space: nowrap; }
+.chip-conectada { background: var(--done-soft); color: var(--done); }
+.chip-sin-conectar { background: var(--glass-tint); color: var(--ink-secondary); }
+
+/* Icono / Calendario, Icono / Documento */
+.icono-cuenta { color: var(--ink-secondary); }

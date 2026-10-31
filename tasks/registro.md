@@ -4,9 +4,9 @@
 
 ## Estado actual
 
-- **Última tarea completada:** `task-04.md` (esqueleto, tokens y cristal; contraste ajustado, 2026-10-31)
+- **Última tarea completada:** `task-05.md` (componentes base con Atomic Design, 2026-10-31)
 - **Tarea en curso:** ninguna
-- **Siguiente tarea por hacer:** `task-05.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
+- **Siguiente tarea por hacer:** `task-06.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
 
 ## Pendientes y problemas abiertos
 
@@ -23,8 +23,30 @@
 - [x] `task-04`, contraste: Rost aprobó la propuesta. Aplicada en `DESIGN-SYSTEM.md` v0.8, Figma y `tokens.css` (ver historial).
 - [ ] `task-06`: pegar al escritorio sin PowerShell (la prueba tarda ~1 s en arrancar por eso) y volver a pegarlo si el Explorador de Windows se reinicia. No se probó el reinicio del Explorador.
 - [ ] Borrar la carpeta `prueba-03/` cuando Rost la haya visto (es desechable).
+- [ ] **`task-05`, texto de ejemplo en un campo (decisión de Rost):** en Figma, el Formulario / Nueva tarea vacío muestra "¿Qué vas a hacer?" en el color del texto principal, porque usa el campo enfocado. En código es el texto de ejemplo del campo (placeholder) y va en `ink-muted`, para que no parezca texto ya escrito. ¿Se queda así o se cambia Figma?
+- [ ] `task-07` y `task-12`: el Aviso y el Formulario / Nueva tarea traen su propia superficie con esquinas de 24 px, como en Figma. Cuando vivan en su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`).
 
 ## Historial
+
+### task-05 — Componentes base (Atomic Design)
+- **Fecha:** 2026-10-31
+- **Estado:** Completada
+- **Qué se hizo:** Se leyeron los 25 componentes de la página "Design System" de Figma y se construyeron en React con los tokens.
+  - **Átomos (10):** Interruptor, Dia, CeldaPosicion, Boton (primario, alerta, secundario), BotonIcono (mas, cerrar), CampoTexto (vacío, lleno, enfocado), Pestana, Chip (conectada, sin-conectar), IconoCalendario e IconoDocumento.
+  - **Moléculas (7):** Tarea (pendiente, en curso, hecha), Evento, Segmento, TarjetaPantalla, CampoConEtiqueta, FilaCuenta (sin conectar, pegar clave, conectada) y Pestanas.
+  - **Organismos (4):** AvisoInicio y AvisoFin, NuevaTarea (vacío, completo) y SeccionCuentas.
+  - **Carpetas:** `src/componentes/atomos|moleculas|organismos`. Cada molécula usa átomos y cada organismo usa moléculas y átomos.
+  - **Íconos:** los 14 SVG se descargaron de Figma sin cambios a `src/iconos/`. Se pintan como máscara, así que toman el color del token y cambian con el modo.
+  - **Página de pruebas:** ahora es un catálogo con todo en todos sus estados. Reemplaza las muestras de colores y de texto de task-04, que se borraron.
+- **Verificación:** captura en modo oscuro (fondo 1) y claro (fondo 3), comparada con las capturas de Figma: coinciden tamaños, colores, rellenos e íconos.
+  - **Teclado:** Tab recorre campos, botones, pestañas, celdas, segmentos y tarjetas, con foco visible (borde de 2 px en acento).
+  - **Accesibilidad:** el interruptor es un `switch`; las pestañas cambian con las flechas; los botones de ícono llevan nombre accesible.
+- **Qué falló:** al principio, el reinicio de estilos de los botones borraba su fondo y su relleno. Se corrigió con `:where()` y se volvió a verificar.
+- **Diferencias con Figma, anotadas en pendientes:**
+  - El texto de ejemplo "¿Qué vas a hacer?" va atenuado en código.
+  - Aviso / Fin y Formulario usan esquinas de 24 px, hasta que tengan ventana propia.
+  - El botón del aviso tiene un relleno de 8 × 18 px porque en Figma no es una instancia de Boton; en código sí usa Boton.
+- **Qué falta:** nada de esta tarea. Sigue `task-06`.
 
 ### task-04 — Contraste aprobado y cierre
 - **Fecha:** 2026-10-31

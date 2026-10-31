@@ -1,13 +1,11 @@
 import { createRoot } from 'react-dom/client';
 import './estilos/tokens.css';
 import Fondo from './pruebas/Fondo.jsx';
-import MuestraColores from './pruebas/MuestraColores.jsx';
-import MuestraTexto from './pruebas/MuestraTexto.jsx';
+import Catalogo from './pruebas/Catalogo.jsx';
 
 const vistas = {
   '/fondo': Fondo,
-  '/muestra/colores': MuestraColores,
-  '/muestra/texto': MuestraTexto,
+  '/catalogo': Catalogo,
 };
 
 // Todas las ventanas comparten el modo; main.js avisa cuando cambia.
