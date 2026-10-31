@@ -1,0 +1,11 @@
+.cristal {
+  box-sizing: border-box;
+  height: 100%;
+  padding: 20px;
+  border: 1px solid var(--line-soft);
+  border-radius: 8px; /* coincide con la esquina que dibuja Windows; ver CLAUDE.md */
+  /* Capas de arriba a abajo: brillo, capa clara, velo */
+  background: var(--brillo), linear-gradient(var(--glass-tint), var(--glass-tint)), var(--glass-veil);
+  color: var(--ink-primary);
+  transition: background var(--duracion), color var(--duracion);
+}

@@ -1,0 +1,27 @@
+/* Solo para la página interna de pruebas; no es parte del widget. */
+.fondo { height: 100%; background: center / cover no-repeat; }
+
+.controles {
+  position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%);
+  display: flex; gap: var(--space-2); align-items: center;
+  padding: var(--space-2); border-radius: var(--radius-pill);
+  background: #1e2433cc; color: #eef2f8;
+}
+.controles button {
+  font: inherit; color: inherit; background: transparent; border: 0; cursor: pointer;
+  padding: 6px 12px; border-radius: var(--radius-pill);
+}
+.controles button[aria-pressed='true'] { background: #a9b8f2; color: #1e2433; }
+.controles button:focus-visible { outline: 2px solid #a9b8f2; outline-offset: 2px; }
+.separador { width: 1px; height: 16px; background: #ffffff33; }
+
+h1, p { margin: 0; }
+.tono-secundario { color: var(--ink-secondary); }
+.tono-atenuado { color: var(--ink-muted); }
+.espacio { margin-top: var(--space-5); }
+.texto-tarea + .texto-detalle, .texto-detalle + .texto-detalle { margin-top: var(--space-1); }
+
+.muestras { list-style: none; margin: var(--space-3) 0; padding: 0; display: grid; gap: var(--space-2); }
+.muestras li { display: flex; align-items: center; gap: var(--space-3); }
+.muestra { width: 28px; height: 28px; border-radius: var(--radius-item); border: 1px solid var(--line-soft); }
+.boton-acento { display: inline-block; padding: 6px 16px; border-radius: var(--radius-pill); background: var(--accent); color: var(--ink-on-accent); }

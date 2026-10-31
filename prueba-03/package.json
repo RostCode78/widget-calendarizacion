@@ -1,0 +1,13 @@
+{
+  "name": "prueba-03",
+  "private": true,
+  "description": "Prueba desechable de task-03: cristal, escritorio, aviso y dos monitores.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pantalla2": "electron . --pantalla=2"
+  },
+  "devDependencies": {
+    "electron": "^45.2.1"
+  }
+}
