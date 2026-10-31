@@ -1,6 +1,6 @@
 # Design System — Widget Calendarizacion
 
-**Versión:** 0.8 (contraste ajustado al cristal real de Windows, task-04)
+**Versión:** 0.9 (módulos Hoy y Esta semana precisados en task-06)
 **Estado:** los valores son un punto de partida. Se validan y ajustan en `task-01.md` con ejemplos reales. Lo que no esté aquí no está decidido.
 
 ## 1. Principios
@@ -95,7 +95,7 @@ Fuente aprobada por Rost: **Nunito** para el texto y **Quicksand Light** para la
 |---|---|---|
 | **Módulo Hora** | Hora grande, día y fecha | Es el ancla visual. Sin segundos. Se puede ocultar desde la configuración del widget. |
 | **Módulo Hoy** | Lista de tareas de hoy (Notion) | Hasta 4 visibles; si hay más, "+N más" (sección 12). Muestra la hora de cada una. |
-| **Módulo Esta semana** | Próximos eventos (calendario) | Máximo 4 visibles. Agrupados por día. |
+| **Módulo Esta semana** | Eventos de los próximos 7 días, empezando hoy (calendario) | Máximo 2 visibles (es lo que cabe sin que el módulo crezca) y "+N más" si hay más. El encabezado muestra el rango, por ejemplo "31 oct – 6 nov". Decidido por Rost en task-06. |
 | **Mini calendario** | Mes actual | Día de hoy con el acento; días con eventos marcados con un punto. |
 
 Filas de tarea: círculo vacío, texto, hora a la derecha. Una tarea completada se atenúa y el círculo se llena con `done`.
@@ -136,7 +136,7 @@ Si hay varios avisos a la vez, se apilan en la misma esquina con 12 px de separa
 
 | Estado | Qué muestra |
 |---|---|
-| **Normal** | Hasta 4 tareas, chip con el número de pendientes y enlace "+N más" si hay más. |
+| **Normal** | Hasta 4 tareas, chip con el número de pendientes y enlace "+N más" si hay 5 o 6 tareas. Desde 7 tareas pasa a "Muchas tareas". Los dos enlaces abren la lista (decidido por Rost en task-06). |
 | **Vacío** | Chip "Al día" con ícono de check, ícono de taza, "Día despejado" y "No tienes tareas para hoy". El módulo conserva su altura. |
 | **Muchas tareas** | Barra de progreso fina bajo el título, textos largos cortados con "…" y enlace "Ver N más" con flecha. |
 | **Lista abierta** | Al tocar "Ver N más" se abre un panel de la misma anchura que el módulo (340 px), pegado al widget por el lado con más espacio y centrado en vertical con él (ajustado a 16 px de los bordes, sección 16). Agrupa las tareas por franja (Mañana, Tarde, Noche) con ícono de sol, y repite chip, progreso y botón de cerrar. El enlace del módulo cambia su flecha para apuntar al panel. |

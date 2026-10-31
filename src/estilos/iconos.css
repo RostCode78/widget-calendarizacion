@@ -21,6 +21,13 @@
 .icono-check-pantalla { width: 14px; height: 14px; mask-image: url(../iconos/check-pantalla.svg); mask-size: 14px 14px; }
 .icono-play-aviso { width: 14px; height: 14px; mask-image: url(../iconos/play-aviso.svg); mask-size: 14px 14px; }
 .icono-bandera { width: 14px; height: 14px; mask-image: url(../iconos/bandera.svg); mask-size: 14px 14px; }
+.icono-chevron-l { width: 14px; height: 14px; mask-image: url(../iconos/chevron-l.svg); mask-size: 14px 14px; }
+.icono-chevron-r { width: 14px; height: 14px; mask-image: url(../iconos/chevron-r.svg); mask-size: 14px 14px; }
+.icono-taza { width: 32px; height: 32px; mask-image: url(../iconos/taza.svg); mask-size: 32px 32px; }
+.icono-cerrar-panel { width: 12px; height: 12px; mask-image: url(../iconos/cerrar-panel.svg); mask-size: 12px 12px; }
+.icono-manana { width: 14px; height: 14px; mask-image: url(../iconos/manana.svg); mask-size: 14px 14px; }
+.icono-tarde { width: 14px; height: 14px; mask-image: url(../iconos/tarde.svg); mask-size: 14px 14px; }
+.icono-noche { width: 14px; height: 14px; mask-image: url(../iconos/noche.svg); mask-size: 14px 14px; }
 
 /* Foco visible para todo lo que se usa con teclado. */
 .foco:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

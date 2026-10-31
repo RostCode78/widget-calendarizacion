@@ -9,7 +9,7 @@
 }
 .controles button {
   font: inherit; color: inherit; background: transparent; border: 0; cursor: pointer;
-  padding: 6px 12px; border-radius: var(--radius-pill);
+  padding: 6px 12px; border-radius: var(--radius-pill); white-space: nowrap;
 }
 .controles button[aria-pressed='true'] { background: #a9b8f2; color: #1e2433; }
 .controles button:focus-visible { outline: 2px solid #a9b8f2; outline-offset: 2px; }

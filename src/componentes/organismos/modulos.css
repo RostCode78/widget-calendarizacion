@@ -1,0 +1,50 @@
+/* Módulos del widget en reposo (Figma: Escritorio / Reposo y sus estados). Cada módulo
+   llena su propia ventana de cristal; por eso el relleno va sobre el átomo Cristal. */
+.modulo { display: flex; flex-direction: column; overflow: hidden; }
+.modulo-encabezado { display: flex; align-items: center; justify-content: space-between; padding: 0 8px; white-space: nowrap; }
+.modulo-encabezado > :first-child { color: var(--ink-secondary); }
+.modulo-derecha { display: flex; align-items: center; gap: 8px; }
+.modulo-mas { padding: 4px 0 0 8px; color: var(--ink-muted); }
+button.modulo-mas { align-self: flex-start; }
+
+/* Hora */
+.modulo-hora { justify-content: center; gap: 2px; padding: 16px 24px; white-space: nowrap; }
+.modulo-hora .texto-fecha { color: var(--ink-secondary); }
+
+/* Mini calendario */
+.modulo-calendario { gap: 10px; padding: 18px; }
+.modulo-calendario .modulo-encabezado { padding: 0 4px; }
+.calendario-flechas { display: flex; gap: 14px; color: var(--ink-muted); }
+.calendario-semana { display: grid; grid-template-columns: repeat(7, 36px); text-align: center; color: var(--ink-muted); }
+.calendario-cuadricula { display: grid; grid-template-columns: repeat(7, 36px); }
+/* Con la hora oculta el calendario ocupa toda la columna: días más altos y bloque Próximo. */
+.modulo-calendario.calendario-alto { gap: 14px; }
+.calendario-alto .dia { height: 42px; }
+.proximo { display: flex; flex-direction: column; gap: 10px; }
+.proximo-divisor { height: 1px; background: var(--line-soft); }
+.proximo > .texto-titulo-modulo { padding-left: 4px; color: var(--ink-secondary); }
+.proximo-evento { display: flex; align-items: center; gap: 12px; padding-left: 4px; white-space: nowrap; }
+
+/* Hoy y Esta semana */
+.modulo-hoy, .modulo-semana, .panel-hoy { gap: 6px; padding: 18px 16px; }
+.hoy-chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent); }
+.hoy-chip-al-dia { padding: 3px 10px 3px 8px; background: var(--done-soft); color: var(--done); }
+.boton-icono.hoy-nueva { width: 22px; height: 22px; }
+.hoy-lista { display: flex; flex-direction: column; gap: 2px; }
+.progreso { padding: 0 8px; }
+.progreso-pista { height: 4px; border-radius: 2px; overflow: hidden; background: var(--line-soft); }
+.progreso-avance { height: 100%; background: var(--accent); }
+.hoy-ver-mas { display: inline-flex; align-items: center; gap: 4px; align-self: flex-start; padding-left: 8px; color: var(--accent); }
+.hoy-vacio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; }
+.hoy-vacio-icono { display: flex; align-items: center; justify-content: center; width: 72px; height: 72px; margin-bottom: 6px; border-radius: 36px; background: var(--accent-soft); color: var(--accent); }
+.hoy-vacio .texto-aviso-titulo { color: var(--ink-primary); }
+.hoy-vacio .texto-detalle { color: var(--ink-secondary); }
+.modulo-semana .modulo-encabezado > :last-child { color: var(--ink-muted); }
+
+/* Panel / Hoy (lista completa) */
+.panel-hoy { gap: 10px; overflow-y: auto; }
+.panel-hoy .modulo-encabezado { padding: 0 0 0 8px; }
+.panel-hoy .modulo-derecha { gap: 10px; }
+.panel-cerrar { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 14px; background: var(--glass-tint); color: var(--ink-secondary); }
+.franja { display: flex; flex-direction: column; gap: 2px; }
+.franja-etiqueta { margin: 0; display: flex; align-items: center; gap: 6px; padding: 4px 0 2px 8px; color: var(--ink-muted); }

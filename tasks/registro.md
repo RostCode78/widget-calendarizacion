@@ -4,9 +4,9 @@
 
 ## Estado actual
 
-- **Última tarea completada:** `task-05.md` (componentes base con Atomic Design, 2026-10-31)
+- **Última tarea completada:** `task-06.md` (widget en reposo con datos de ejemplo, 2026-10-31)
 - **Tarea en curso:** ninguna
-- **Siguiente tarea por hacer:** `task-06.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
+- **Siguiente tarea por hacer:** `task-07.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
 
 ## Pendientes y problemas abiertos
 
@@ -21,12 +21,40 @@
 - [x] La lógica de avisos de `task-10` ahora pide una prueba automática de los 4 casos.
 - [x] `task-04`: Rost eligió una ventana por módulo con cristal real (esquinas de ~8 px que dibuja Windows, no 24 px) y React + Vite.
 - [x] `task-04`, contraste: Rost aprobó la propuesta. Aplicada en `DESIGN-SYSTEM.md` v0.8, Figma y `tokens.css` (ver historial).
-- [ ] `task-06`: pegar al escritorio sin PowerShell (la prueba tarda ~1 s en arrancar por eso) y volver a pegarlo si el Explorador de Windows se reinicia. No se probó el reinicio del Explorador.
-- [ ] Borrar la carpeta `prueba-03/` cuando Rost la haya visto (es desechable).
-- [ ] **`task-05`, texto de ejemplo en un campo (decisión de Rost):** en Figma, el Formulario / Nueva tarea vacío muestra "¿Qué vas a hacer?" en el color del texto principal, porque usa el campo enfocado. En código es el texto de ejemplo del campo (placeholder) y va en `ink-muted`, para que no parezca texto ya escrito. ¿Se queda así o se cambia Figma?
+- [x] `task-06`: pegar al escritorio sin PowerShell y volver a pegarlo si el Explorador se reinicia. Hecho con koffi (ver historial).
+- [x] Borrar la carpeta `prueba-03/`: Rost la borró en el commit de task-05.
+- [ ] **Wallpaper Engine tras reiniciar el Explorador:** el widget se vuelve a pegar bien (comprobado: dueño = el nuevo escritorio, justo encima de él y visible), pero después del reinicio Wallpaper Engine se engancha dentro del escritorio de otra forma y, al pulsar Win+D, su imagen tapa el widget. Antes del reinicio Win+D funciona. Probablemente se arregla reiniciando Wallpaper Engine; no se probó para no tocar esa app. Revisar si vuelve a pasar.
+- [x] `task-05`, texto de ejemplo en un campo: Rost decidió que el texto de ejemplo (placeholder) va siempre en `ink-muted`, también con el campo enfocado ("¿Qué vas a hacer?" en Nueva tarea), para que no parezca texto ya escrito.
 - [ ] `task-07` y `task-12`: el Aviso y el Formulario / Nueva tarea traen su propia superficie con esquinas de 24 px, como en Figma. Cuando vivan en su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`).
 
 ## Historial
+
+### task-06 — Widget en reposo con datos de ejemplo
+- **Fecha:** 2026-10-31
+- **Estado:** Completada
+- **Decisiones de Rost:**
+  - koffi para pegar al escritorio sin PowerShell.
+  - Hoy: hasta 6 tareas muestra "+N más"; desde 7, barra de progreso y "Ver N más". Los dos abren la lista.
+  - Esta semana: próximos 7 días desde hoy, máximo 2 eventos y "+N más".
+  - `DESIGN-SYSTEM.md` pasa a v0.9 (secciones 7 y 12).
+- **Qué se hizo:**
+  - **Ventanas:** el widget son 4 ventanas de cristal (Hora 288×160, Mini calendario 288×304, Hoy 340×272, Esta semana 340×192) colocadas en la posición 6 (x 1216, y 302), más la ventana de la lista abierta (340×680).
+  - **Organismos nuevos:** ModuloHora, ModuloCalendario, ModuloHoy, ModuloSemana y PanelHoy. Usan los átomos y moléculas de task-05.
+  - **Hora y fechas:** la hora es la real y se actualiza cada minuto, sin segundos. Las fechas van en español.
+  - **Calendario:** muestra el mes real con 6 semanas; las flechas cambian de mes.
+  - **Estados:** normal, vacío ("Al día", taza, "Día despejado"), muchas tareas (barra y "Ver 8 más"), tarea en curso (con rango de horas), lista abierta y hora oculta.
+  - **Lista abierta:** agrupa por franja (Mañana, Tarde, Noche) con su ícono. Se abre a 12 px del lado con más espacio, y la flecha de "Ver N más" apunta hacia ella.
+  - **Hora oculta:** el calendario ocupa los 476 px, con días más altos y el bloque "Próximo", sin huecos.
+  - **Pegado al escritorio:** `electron/escritorio.js` lo hace con koffi y lo repite cuando el Explorador se reinicia (mensaje `TaskbarCreated`).
+  - **Página de pruebas:** el fondo de Figma queda pegado debajo del widget; la barra cambia fondo, modo, escenario y hora; el catálogo se abre con un botón.
+  - **Íconos:** 7 nuevos de Figma (flechas, taza, cerrar, mañana, tarde, noche).
+- **Verificación:**
+  - **Comparación con Figma:** capturas de cada estado comparadas con los frames 6:2, 10:243, 11:336, 15:1224, 14:576 y 20:3293; coinciden.
+  - **Contraste:** medido en las zonas vacías del cristal, peor punto. Oscuro en los fondos 1 y 5: atenuado 5.8 y 5.0. Claro en los fondos 2, 3 y 4: atenuado 4.7, 4.5 y 5.6. Todo pasa 4.5:1 con el uso de la sección 14. Fuera de ese uso (oscuro en 2 y 4, claro en 1 y 5), el atenuado queda entre 4.0 y 4.4, igual que en task-04.
+  - **Pegado:** queda debajo de otra ventana, un clic no lo sube ni le da el foco, y sobrevive a Win+D.
+  - **Reinicio del Explorador** (con permiso de Rost): el widget sobrevive y se vuelve a pegar al escritorio nuevo, lo que se comprobó en el registro de la app.
+- **Qué falló:** con Wallpaper Engine, después de reiniciar el Explorador, Win+D deja la imagen del fondo animado encima del widget (ver pendientes). Además, al detener `npm run dev` quedaban procesos viejos de Electron abiertos; se cerraron y se anotó en `CLAUDE.md`.
+- **Qué falta:** nada de esta tarea. Sigue `task-07`.
 
 ### task-05 — Componentes base (Atomic Design)
 - **Fecha:** 2026-10-31
