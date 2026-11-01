@@ -4,9 +4,9 @@
 
 ## Estado actual
 
-- **Última tarea completada:** `task-10.md` (avisos de inicio y de fin, 2026-10-31)
-- **Tarea en curso:** `task-11.md` (Parcial: falta que Rost reinicie la computadora, use el widget un día y lo apruebe)
-- **Siguiente tarea por hacer:** cerrar `task-11.md` con la aprobación de Rost; después `task-12.md`.
+- **Última tarea completada:** `task-11.md` (pulido, arranque con Windows e instalador; aprobada por Rost, 2026-10-31)
+- **Tarea en curso:** ninguna
+- **Siguiente tarea por hacer:** `task-12.md` (crear tareas desde el widget). Es la última tarea creada.
 
 ## Pendientes y problemas abiertos
 
@@ -26,13 +26,13 @@
 - [ ] **Wallpaper Engine tras reiniciar el Explorador:** el widget se vuelve a pegar bien (comprobado: dueño = el nuevo escritorio, justo encima de él y visible), pero después del reinicio Wallpaper Engine se engancha dentro del escritorio de otra forma y, al pulsar Win+D, su imagen tapa el widget. Antes del reinicio Win+D funciona. Probablemente se arregla reiniciando Wallpaper Engine; no se probó para no tocar esa app. Revisar si vuelve a pasar.
 - [x] `task-05`, texto de ejemplo en un campo: Rost decidió que el texto de ejemplo (placeholder) va siempre en `ink-muted`, también con el campo enfocado ("¿Qué vas a hacer?" en Nueva tarea), para que no parezca texto ya escrito.
 - [ ] `task-12`: el Formulario / Nueva tarea trae su propia superficie con esquinas de 24 px, como en Figma. En su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`). El Aviso ya se resolvió así en task-10 (`aviso-ventana`).
-- [ ] `task-11`: Rost reinicia la computadora, revisa la casilla "Iniciar con Windows" de la bandeja y usa el widget un día completo para aprobarlo.
+- [x] `task-11`: Rost reinició, revisó la casilla "Iniciar con Windows", usó el widget y lo aprobó.
 
 ## Historial
 
 ### task-11 — Pulido, arranque con Windows e instalador
 - **Fecha:** 2026-10-31
-- **Estado:** Parcial. Todo lo de la tarea está hecho y probado; faltan dos criterios que dependen de Rost: reiniciar la computadora y usar el widget un día completo.
+- **Estado:** Completada. Primero quedó Parcial, a la espera de la prueba de Rost; Rost reinició, usó el widget y lo aprobó el mismo día.
 - **Decisiones de Rost:**
   - Instalador con **electron-builder**.
   - Arranque con Windows con una casilla **"Iniciar con Windows"** en el menú de la bandeja.
@@ -75,11 +75,7 @@
   - El instalador falló una vez porque una terminal tenía abierta su carpeta de salida; se limpió y se volvió a crear.
   - No se reinició la computadora ni se desconectó un monitor de verdad. Lo del monitor se simuló dentro del widget.
   - No se abrió a mano el menú de la bandeja para ver la casilla "Iniciar con Windows".
-- **Qué falta:**
-  - Rost reinicia la computadora y comprueba que el widget aparece solo y bien colocado.
-  - Rost revisa la casilla de la bandeja.
-  - Rost lo usa un día completo y lo aprueba.
-  - Con eso se marca Completada y sigue `task-12`.
+- **Qué falta:** nada. Rost aprobó la tarea tras reiniciar, revisar la casilla de la bandeja y usar el widget. Sigue `task-12`.
 - **Observación:** unos 300 MB de memoria son normales para Electron con cuatro ventanas. Si molestan, la única forma de bajarlos sería juntar módulos en menos ventanas, y eso cambia la decisión de task-04 (una ventana por módulo).
 
 ### task-10 — Avisos de inicio y de fin
