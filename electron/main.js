@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, Tray, ipcMain, nativeImage, nativeTheme, powerMonitor, screen, systemPreferences } from 'electron';
+import { app, BrowserWindow, globalShortcut, Menu, Tray, ipcMain, nativeImage, nativeTheme, powerMonitor, screen, systemPreferences } from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -171,6 +171,7 @@ function colocarWidget() {
   for (const [nombre, win] of Object.entries(ventanas)) win.setBounds(limites(nombre, origen));
   if (panel) animar(panel, limitesPanel(origen));
   if (config) animar(config, limitesConfig(origen, altoConfig));
+  actualizarAvisos(); // también cambian de esquina o de pantalla
 }
 
 function abrirPanel() {
@@ -264,14 +265,25 @@ function actualizarAvisos() {
     win.once('ready-to-show', () => win.showInactive());
     ventanasAviso.set(aviso.clave, win);
   });
+  atajoDeAvisos();
   return cambio;
 }
 
 // Aceptar el aviso de inicio empieza la tarea; el de fin la termina. Se escribe en Notion.
-ipcMain.on('aviso:aceptar', (_e, clave) => {
+function aceptarAviso(clave) {
   const aviso = estado.avisos.find((a) => a.clave === clave);
   if (aviso) notion.marcar(aviso.id, aviso.tipo === 'inicio' ? 'enCurso' : 'hecha');
-});
+}
+ipcMain.on('aviso:aceptar', (_e, clave) => aceptarAviso(clave));
+
+// Teclado (task-11): como los avisos no reciben foco, Ctrl+Alt+Enter acepta el de arriba desde
+// cualquier app. El atajo solo se reserva mientras hay avisos.
+const ATAJO = 'Control+Alt+Enter';
+function atajoDeAvisos() {
+  const hay = estado.avisos.length > 0;
+  if (hay && !globalShortcut.isRegistered(ATAJO)) globalShortcut.register(ATAJO, () => estado.avisos[0] && aceptarAviso(estado.avisos[0].clave));
+  if (!hay && globalShortcut.isRegistered(ATAJO)) globalShortcut.unregister(ATAJO);
+}
 
 // "Identificar pantallas": un número grande en cada monitor durante 3 segundos.
 function identificarPantallas() {
@@ -296,7 +308,8 @@ function fondoDeEscritorio() {
 function actualizarPantallas() {
   const hay = screen.getAllDisplays().length > 1;
   if (hay !== estado.hayPantalla2) cambiar({ hayPantalla2: hay });
-  else colocarWidget();
+  // Siempre se recoloca: sin la pantalla 2, el widget pasa a la principal (y vuelve al reconectarla).
+  colocarWidget();
 }
 
 // ---- Página interna de pruebas: un fondo de Figma debajo del widget y el catálogo aparte ----
@@ -323,11 +336,26 @@ function alternarCatalogo() {
 
 let bandeja = null;
 
+// Arranque con Windows (task-11): se activa solo la primera vez que abre el widget instalado y
+// después lo decide Rost con la casilla del menú. En desarrollo no se toca (sería electron.exe).
+function prepararArranque() {
+  if (!app.isPackaged || estado.arranqueListo) return;
+  app.setLoginItemSettings({ openAtLogin: true });
+  cambiar({ arranqueListo: true });
+}
+
 function crearBandeja() {
   bandeja = new Tray(path.join(dir, 'icono-bandeja.png'));
   bandeja.setToolTip('Calendarizacion');
+  const arranque = app.isPackaged ? [{
+    label: 'Iniciar con Windows',
+    type: 'checkbox',
+    checked: app.getLoginItemSettings().openAtLogin,
+    click: (casilla) => app.setLoginItemSettings({ openAtLogin: casilla.checked }),
+  }] : [];
   bandeja.setContextMenu(Menu.buildFromTemplate([
     { label: 'Configuración', click: () => cambiar({ configAbierta: true }) },
+    ...arranque,
     { type: 'separator' },
     { label: 'Salir', click: () => app.quit() },
   ]));
@@ -371,6 +399,7 @@ app.whenReady().then(() => {
   temaWindows();
   if (pruebas) abrirPruebas();
   crearWidget();
+  prepararArranque();
   crearBandeja();
   // Primero lo último leído (sirve sin internet); luego Notion y Google, cada pocos minutos y al despertar el equipo.
   notion.publicar();
@@ -388,3 +417,4 @@ app.whenReady().then(() => {
 
 // El widget vive aunque se cierre la configuración o la lista; se sale desde la bandeja.
 app.on('window-all-closed', () => {});
+app.on('will-quit', () => globalShortcut.unregisterAll());

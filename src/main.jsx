@@ -43,7 +43,9 @@ const vistas = {
 function VentanaAviso({ estado, clave }) {
   const aviso = estado.avisos.find((a) => a.clave === clave);
   if (!aviso) return null;
-  const props = { className: 'aviso-ventana', titulo: aviso.texto, hora: aviso.hora, alAceptar: () => window.widget.aceptarAviso(clave) };
+  // El de arriba también se acepta con Ctrl+Alt+Enter (electron/main.js).
+  const atajo = estado.avisos[0].clave === clave ? 'Control+Alt+Enter' : undefined;
+  const props = { className: 'aviso-ventana', titulo: aviso.texto, hora: aviso.hora, atajo, alAceptar: () => window.widget.aceptarAviso(clave) };
   return aviso.tipo === 'inicio' ? <AvisoInicio rango={aviso.rango} {...props} /> : <AvisoFin {...props} />;
 }
 

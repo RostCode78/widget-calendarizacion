@@ -3,13 +3,14 @@
 import { leerJson, escribirJson } from './archivos.js';
 
 // La posición (1–9) se guarda por pantalla (1 = principal, 2 = la otra).
-const base = { modo: 'oscuro', horaVisible: true, pantalla: 1, posiciones: { 1: 6, 2: 6 } };
+// `arranqueListo`: el arranque con Windows ya se activó la primera vez (task-11); desde ahí lo decide Rost.
+const base = { modo: 'oscuro', horaVisible: true, pantalla: 1, posiciones: { 1: 6, 2: 6 }, arranqueListo: false };
 
 export function leerConfiguracion() {
   const guardada = leerJson('configuracion.json', {});
   return { ...structuredClone(base), ...guardada, posiciones: { ...base.posiciones, ...guardada.posiciones } };
 }
 
-export function guardarConfiguracion({ modo, horaVisible, pantalla, posiciones }) {
-  escribirJson('configuracion.json', { modo, horaVisible, pantalla, posiciones });
+export function guardarConfiguracion({ modo, horaVisible, pantalla, posiciones, arranqueListo }) {
+  escribirJson('configuracion.json', { modo, horaVisible, pantalla, posiciones, arranqueListo });
 }

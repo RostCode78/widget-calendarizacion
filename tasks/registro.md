@@ -5,8 +5,8 @@
 ## Estado actual
 
 - **Última tarea completada:** `task-10.md` (avisos de inicio y de fin, 2026-10-31)
-- **Tarea en curso:** ninguna
-- **Siguiente tarea por hacer:** `task-11.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
+- **Tarea en curso:** `task-11.md` (Parcial: falta que Rost reinicie la computadora, use el widget un día y lo apruebe)
+- **Siguiente tarea por hacer:** cerrar `task-11.md` con la aprobación de Rost; después `task-12.md`.
 
 ## Pendientes y problemas abiertos
 
@@ -25,9 +25,62 @@
 - [x] Borrar la carpeta `prueba-03/`: Rost la borró en el commit de task-05.
 - [ ] **Wallpaper Engine tras reiniciar el Explorador:** el widget se vuelve a pegar bien (comprobado: dueño = el nuevo escritorio, justo encima de él y visible), pero después del reinicio Wallpaper Engine se engancha dentro del escritorio de otra forma y, al pulsar Win+D, su imagen tapa el widget. Antes del reinicio Win+D funciona. Probablemente se arregla reiniciando Wallpaper Engine; no se probó para no tocar esa app. Revisar si vuelve a pasar.
 - [x] `task-05`, texto de ejemplo en un campo: Rost decidió que el texto de ejemplo (placeholder) va siempre en `ink-muted`, también con el campo enfocado ("¿Qué vas a hacer?" en Nueva tarea), para que no parezca texto ya escrito.
-- [ ] `task-07` y `task-12`: el Aviso y el Formulario / Nueva tarea traen su propia superficie con esquinas de 24 px, como en Figma. Cuando vivan en su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`).
+- [ ] `task-12`: el Formulario / Nueva tarea trae su propia superficie con esquinas de 24 px, como en Figma. En su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`). El Aviso ya se resolvió así en task-10 (`aviso-ventana`).
+- [ ] `task-11`: Rost reinicia la computadora, revisa la casilla "Iniciar con Windows" de la bandeja y usa el widget un día completo para aprobarlo.
 
 ## Historial
+
+### task-11 — Pulido, arranque con Windows e instalador
+- **Fecha:** 2026-10-31
+- **Estado:** Parcial. Todo lo de la tarea está hecho y probado; faltan dos criterios que dependen de Rost: reiniciar la computadora y usar el widget un día completo.
+- **Decisiones de Rost:**
+  - Instalador con **electron-builder**.
+  - Arranque con Windows con una casilla **"Iniciar con Windows"** en el menú de la bandeja.
+  - **Ctrl + Alt + Enter** para aceptar avisos con el teclado.
+  - `DESIGN-SYSTEM.md` pasa a v0.14 (secciones 13 y 17).
+- **Qué se hizo:**
+  - **Arranque con Windows:**
+    - Se activa la primera vez que se abre el widget instalado.
+    - Desde ahí lo decide la casilla de la bandeja.
+    - En desarrollo no se toca.
+  - **Atajo de avisos:**
+    - Ctrl + Alt + Enter acepta el aviso de arriba sin cambiar la ventana activa.
+    - Solo está activo mientras hay avisos y se libera al salir.
+    - El botón lo anuncia en la descripción emergente y a los lectores de pantalla (`aria-keyshortcuts`).
+  - **Monitores:**
+    - **Fallo encontrado y corregido:** al conectar o desconectar una pantalla, el widget no se volvía a colocar y podía quedar fuera de la vista. Ahora siempre se recoloca.
+    - Sin la pantalla elegida, pasa a la principal en la misma posición y regresa al reconectarla.
+    - Los avisos también se recolocan al cambiar de pantalla o de resolución.
+  - **Instalador:**
+    - `npm run instalador` → `instalador/Calendarizacion Setup 1.0.0.exe` (126 MB; casi todo es Electron).
+    - Instalación de un clic, por usuario, con acceso en Inicio y desinstalador.
+    - Ícono de la app en `build/icon.png`.
+    - `instalador/` queda fuera de git.
+    - Paquete nuevo de desarrollo: `electron-builder` (aprobado).
+  - **Guía:** `GUIA-DE-USO.md`, en español: instalar, uso diario, avisos, configuración, conectar cuentas, desinstalar y problemas comunes.
+- **Verificación:**
+  - **Instalado en este equipo:**
+    - Se instaló en silencio y arrancó con tus tareas de Notion y tus eventos de Google reales. Las credenciales se leen bien desde la app instalada.
+    - Quedó registrado en el arranque de Windows (`HKCU\…\Run`).
+    - Con el widget instalado abierto, la copia de desarrollo se cierra sola: comparten carpeta de datos.
+  - **Atajo** (widget de prueba con Notion simulado): dos avisos aceptados con Ctrl + Alt + Enter, en orden, con "En curso" enviado a Notion y el foco sin moverse.
+  - **Monitores** (simulación de quitar y volver a poner la pantalla 2 en el widget de prueba): el widget y los avisos pasaron de la pantalla 2 (x ≥ 1920) a la principal en la posición 6 con avisos a la izquierda, y regresaron al reconectarla.
+  - **Fondos:** los 5 fondos en oscuro y claro con tus datos reales. Todo se lee; el contraste medido en task-06 sigue vigente porque los colores no cambiaron.
+  - **Teclado en la configuración:** el foco visible (borde de 2 px) recorre también la pestaña Cuentas (Desconectar de cada cuenta y la X).
+  - **Consumo en reposo** (widget de prueba solo, 60 s, 9 procesos):
+    - Procesador: 0.65 % de un núcleo; con 8 núcleos, menos del 0.1 % del equipo.
+    - Memoria: unos 300 MB privados. Cada módulo es su propia ventana con cristal, y cada ventana cuesta unos 26–30 MB.
+  - `npm test`: 4 de 4.
+- **Qué falló:**
+  - El instalador falló una vez porque una terminal tenía abierta su carpeta de salida; se limpió y se volvió a crear.
+  - No se reinició la computadora ni se desconectó un monitor de verdad. Lo del monitor se simuló dentro del widget.
+  - No se abrió a mano el menú de la bandeja para ver la casilla "Iniciar con Windows".
+- **Qué falta:**
+  - Rost reinicia la computadora y comprueba que el widget aparece solo y bien colocado.
+  - Rost revisa la casilla de la bandeja.
+  - Rost lo usa un día completo y lo aprueba.
+  - Con eso se marca Completada y sigue `task-12`.
+- **Observación:** unos 300 MB de memoria son normales para Electron con cuatro ventanas. Si molestan, la única forma de bajarlos sería juntar módulos en menos ventanas, y eso cambia la decisión de task-04 (una ventana por módulo).
 
 ### task-10 — Avisos de inicio y de fin
 - **Fecha:** 2026-10-31

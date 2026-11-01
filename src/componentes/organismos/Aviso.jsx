@@ -3,7 +3,7 @@ import Boton from '../atomos/Boton.jsx';
 import './organismos.css';
 
 // Figma: Aviso / Inicio y Aviso / Fin (sección 17). Mismo cuerpo; cambian chip, origen y botón.
-function Aviso({ icono, estado, boton, titulo, hora, origen, alAceptar, className = '' }) {
+function Aviso({ icono, estado, boton, titulo, hora, origen, alAceptar, atajo, className = '' }) {
   return (
     <section className={`superficie aviso ${className}`} role="alert">
       <div className="aviso-fila">
@@ -13,7 +13,7 @@ function Aviso({ icono, estado, boton, titulo, hora, origen, alAceptar, classNam
       <p className="aviso-titulo texto-aviso-titulo">{titulo}</p>
       <div className="aviso-fila">
         <span className="aviso-detalle texto-detalle">{origen}</span>
-        <Boton tipo="alerta" onClick={alAceptar}>{boton}</Boton>
+        <Boton tipo="alerta" onClick={alAceptar} aria-keyshortcuts={atajo} title={atajo && `${boton} (Ctrl+Alt+Enter)`}>{boton}</Boton>
       </div>
     </section>
   );

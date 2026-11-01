@@ -1,6 +1,6 @@
 # Design System — Widget Calendarizacion
 
-**Versión:** 0.13 (avisos de inicio y de fin, task-10)
+**Versión:** 0.14 (arranque con Windows, atajo de avisos e instalador, task-11)
 **Estado:** los valores son un punto de partida. Se validan y ajustan en `task-01.md` con ejemplos reales. Lo que no esté aquí no está decidido.
 
 ## 1. Principios
@@ -146,7 +146,9 @@ Regla: el módulo del widget nunca crece ni se desplaza. Todo lo que no cabe se 
 ## 13. Configuración del widget
 
 - Panel de 520 px con cristal. Los cambios se aplican al instante, sin botón de guardar.
-- **Se abre desde un ícono en la bandeja de Windows** (junto al reloj): clic para abrir o cerrar; clic derecho muestra "Configuración" y "Salir". El widget no lleva ícono propio (decidido por Rost en task-07).
+- **Se abre desde un ícono en la bandeja de Windows** (junto al reloj): clic para abrir o cerrar; clic derecho muestra "Configuración", la casilla "Iniciar con Windows" y "Salir". El widget no lleva ícono propio (decidido por Rost en task-07).
+- **Arranque con Windows (task-11):** queda activado la primera vez que se abre el widget instalado. La casilla del menú de la bandeja lo apaga o enciende (decidido por Rost). Al arrancar, el widget aparece en su pantalla y posición guardadas.
+- Si se desconecta la pantalla elegida, el widget (y sus avisos) pasan a la principal en la misma posición, y regresan al reconectarla.
 - Si no hay segunda pantalla, la tarjeta Pantalla 2 dice "No conectada" y no se puede elegir.
 - **Pantalla:** dos tarjetas (Pantalla 1 principal y Pantalla 2 secundaria) y un enlace "Identificar pantallas" que muestra el número en cada monitor.
 - **Posición:** vista previa del monitor con cuadrícula de 3 × 3. Se toca una celda y el widget se alinea a ese punto. No hay arrastrar y soltar, para evitar desalineaciones.
@@ -260,6 +262,7 @@ Decisión de Rost: **aceptar un aviso = empezar la tarea.** Las tareas con hora 
 - Aviso de fin: desde la hora de cierre, mientras la tarea no esté hecha. Si el de inicio no se aceptó, el de fin lo reemplaza: un solo aviso por tarea (decidido por Rost).
 - Si el equipo estuvo apagado o dormido, al volver aparecen los avisos de hoy que sigan pendientes. Un aviso sin aceptar sigue ahí aunque se cierre y se abra el widget.
 - Medida: 320 × 128 px, como en Figma. Se apilan en orden de hora.
+- **Teclado (task-11):** como los avisos no reciben foco, **Ctrl + Alt + Enter** acepta el aviso de arriba desde cualquier app (decidido por Rost). El atajo solo está activo mientras hay avisos. Su botón lo anuncia en la descripción emergente y a los lectores de pantalla.
 
 ### Tareas con una sola hora (decidido)
 - Solo tienen aviso de inicio. Se marcan como hechas desde la lista.
