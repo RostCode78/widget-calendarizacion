@@ -34,6 +34,9 @@
 .nueva-tarea-horas .campo-etiqueta { flex: 1; min-width: 0; }
 .nueva-tarea-nota { display: flex; gap: 8px; align-items: flex-start; margin: 0; color: var(--ink-secondary); }
 .nueva-tarea-acciones { display: flex; gap: 8px; justify-content: flex-end; }
+.nueva-tarea-error { color: var(--alert); }
+/* En su propia ventana (task-12) la superficie la llena: Windows dibuja esquinas de ~8 px. */
+.nueva-ventana { width: 100%; border-radius: 8px; }
 
 /* Seccion / Cuentas: 470 px */
 .cuentas { display: flex; flex-direction: column; gap: 12px; width: 470px; }

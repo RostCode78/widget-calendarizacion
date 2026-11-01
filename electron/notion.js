@@ -88,6 +88,31 @@ export async function leerTareas(clave, baseId, desde, hasta) {
   return tareas;
 }
 
+// "AAAA-MM-DD" + "HH:MM" → fecha con la zona del equipo ("2026-11-02T19:30:00-06:00"), como la escribe Notion.
+function conZona(dia, hora) {
+  const minutos = -new Date(`${dia}T${hora}`).getTimezoneOffset();
+  const signo = minutos >= 0 ? '+' : '-';
+  const abs = Math.abs(minutos);
+  return `${dia}T${hora}:00${signo}${dosDigitos(Math.floor(abs / 60))}:${dosDigitos(abs % 60)}`;
+}
+
+// Nueva tarea (task-12): pendiente, con su día y, si las hay, hora de inicio y de cierre.
+export async function crearTarea(clave, baseId, { texto, dia, inicio, fin }) {
+  const fecha = inicio ? { start: conZona(dia, inicio), end: fin ? conZona(dia, fin) : null } : { start: dia };
+  const pagina = await pedir(clave, '/pages', {
+    method: 'POST',
+    body: {
+      parent: { type: 'data_source_id', data_source_id: baseId },
+      properties: {
+        [PROPIEDADES.titulo]: { title: [{ text: { content: texto } }] },
+        [PROPIEDADES.estado]: { status: { name: ESTADOS.pendiente } },
+        [PROPIEDADES.fecha]: { date: fecha },
+      },
+    },
+  });
+  return aTarea(pagina);
+}
+
 // `estado`: 'pendiente' | 'enCurso' | 'hecha'.
 export async function cambiarEstado(clave, paginaId, estado) {
   await pedir(clave, `/pages/${paginaId}`, {

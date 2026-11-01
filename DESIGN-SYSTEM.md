@@ -1,6 +1,6 @@
 # Design System — Widget Calendarizacion
 
-**Versión:** 0.14 (arranque con Windows, atajo de avisos e instalador, task-11)
+**Versión:** 0.15 (crear tareas desde el widget, task-12)
 **Estado:** los valores son un punto de partida. Se validan y ajustan en `task-01.md` con ejemplos reales. Lo que no esté aquí no está decidido.
 
 ## 1. Principios
@@ -313,3 +313,10 @@ Reglas:
 - Botones: **Cancelar** (secundario) y **Crear tarea** (primario). El campo Nombre abre enfocado.
 - Estados: vacío (Nombre enfocado) y completo.
 - Vistas: Escritorio / Nueva tarea (vacía) y (completa).
+- **Funcionamiento (task-12):**
+  - **Día:** se ve como un campo de texto ("Hoy"). Abre una lista con hoy y los 6 días siguientes ("Hoy", "Mañana", "Lun 2 nov"…), los mismos que lee el widget. Con el teclado, las flechas cambian el día; Enter crea la tarea. La lista abierta usa el color base del velo, sólido (decidido por Rost).
+  - **Inicio y Cierre:** en 24 h. Aceptan "1930", "19:30" o "7:30 pm" y al salir del campo quedan como "19:30". Las flechas suben o bajan 15 minutos (decidido por Rost).
+  - **Validación:** al pulsar "Crear tarea", el primer problema reemplaza la nota en color `alert`: falta el nombre, hora que no se entiende, cierre sin inicio, o cierre que no va después del inicio. Al corregir, vuelve la nota.
+  - **Guardar:** el botón dice "Creando…" mientras espera. Si Notion responde, la ventana se cierra y la tarea aparece al instante en Hoy con sus avisos. Si no hay internet o Notion no responde, lo escrito se queda y el mensaje lo dice ("Sin conexión. Lo que escribiste sigue aquí; intenta de nuevo.").
+  - **Sin Notion conectado:** el botón + abre la configuración en la pestaña Cuentas.
+  - Se cierra con la X, Cancelar o Escape. En su propia ventana, la superficie la llena (esquinas de ~8 px).

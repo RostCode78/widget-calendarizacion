@@ -1,6 +1,7 @@
+import { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import './estilos/tokens.css';
-import { useEstado } from './estado.js';
+import { cambiar, useEstado } from './estado.js';
 import { eventosDesde, tareasDeHoy } from './datos/ejemplo.js';
 import { avisoGoogle, avisoNotion } from './componentes/organismos/hoy.jsx';
 import ModuloHora from './componentes/organismos/ModuloHora.jsx';
@@ -11,6 +12,7 @@ import PanelHoy from './componentes/organismos/PanelHoy.jsx';
 import PanelConfiguracion from './componentes/organismos/PanelConfiguracion.jsx';
 import Cristal from './componentes/atomos/Cristal.jsx';
 import { AvisoFin, AvisoInicio } from './componentes/organismos/Aviso.jsx';
+import NuevaTarea from './componentes/organismos/NuevaTarea.jsx';
 import Fondo from './pruebas/Fondo.jsx';
 import Catalogo from './pruebas/Catalogo.jsx';
 
@@ -29,15 +31,33 @@ const avisoSemana = (e) => (e.escenario === 'real' ? avisoGoogle(e.google) : nul
 const vistas = {
   '/modulo/hora': () => <ModuloHora />,
   '/modulo/calendario': (e) => <ModuloCalendario alto={!e.horaVisible} eventos={eventos(e)} />,
-  '/modulo/hoy': (e) => <ModuloHoy tareas={tareas(e)} aviso={aviso(e)} panelAbierto={e.panelAbierto} ladoPanel={e.ladoLateral} />,
+  '/modulo/hoy': (e) => <ModuloHoy tareas={tareas(e)} aviso={aviso(e)} panelAbierto={e.panelAbierto} ladoPanel={e.ladoLateral} alNuevaTarea={() => window.widget.nuevaTarea()} />,
   '/modulo/semana': (e) => <ModuloSemana eventos={eventos(e)} aviso={avisoSemana(e)} />,
   '/panel/hoy': (e) => <PanelHoy tareas={tareas(e)} aviso={aviso(e)} />,
   '/configuracion': (e) => <PanelConfiguracion estado={e} />,
+  '/nueva-tarea': () => <VentanaNuevaTarea />,
   '/identificar/1': () => <Cristal className="identificar"><span className="texto-hora">1</span></Cristal>,
   '/identificar/2': () => <Cristal className="identificar"><span className="texto-hora">2</span></Cristal>,
   '/fondo': (e) => <Fondo estado={e} />,
   '/catalogo': () => <Catalogo />,
 };
+
+// Nueva tarea (task-12): la ventana toma el alto del formulario; Esc, la X o Cancelar la cierran.
+function VentanaNuevaTarea() {
+  const formulario = useRef(null);
+  const cerrar = () => cambiar({ nuevaAbierta: false });
+  useEffect(() => {
+    const conEsc = (e) => e.key === 'Escape' && cerrar();
+    window.addEventListener('keydown', conEsc);
+    const medida = new ResizeObserver(() => window.widget.altoNuevaTarea(formulario.current.offsetHeight));
+    medida.observe(formulario.current);
+    return () => {
+      window.removeEventListener('keydown', conEsc);
+      medida.disconnect();
+    };
+  }, []);
+  return <NuevaTarea ref={formulario} className="nueva-ventana" alCrear={(datos) => window.widget.crearTarea(datos)} alCancelar={cerrar} />;
+}
 
 // Aviso flotante (task-10): la ruta trae la clave del aviso ("/aviso/<tarea>-inicio").
 function VentanaAviso({ estado, clave }) {

@@ -46,6 +46,12 @@
 .campo::placeholder { color: var(--ink-muted); }
 /* Enfocado: borde de 1.5 px en acento sin mover el contenido. */
 .campo:focus, .campo-enfocado { border-color: var(--accent); box-shadow: 0 0 0 0.5px var(--accent); }
+/* Lista (Día): sin flecha del sistema, como en Figma. La lista abierta no puede ser de cristal:
+   usa el color base del velo de cada modo, sólido, para que se lea. */
+.campo-lista { appearance: none; cursor: pointer; }
+.campo-lista option { color: var(--ink-primary); }
+[data-modo='oscuro'] .campo-lista option { background: #1e2433; }
+[data-modo='claro'] .campo-lista option { background: #ffffff; }
 
 /* Pestaña */
 .pestana { display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; border-radius: var(--radius-pill); color: var(--ink-secondary); }

@@ -133,7 +133,7 @@ export default function Catalogo() {
           <NuevaTarea />
         </Muestra>
         <Muestra nombre="Formulario / Nueva tarea (completo)">
-          <NuevaTarea inicial={{ nombre: 'Preparar entrega de EBAC', dia: 'Hoy', inicio: '19:30', cierre: '20:30' }} />
+          <NuevaTarea inicial={{ nombre: 'Preparar entrega de EBAC', inicio: '19:30', cierre: '20:30' }} />
         </Muestra>
         <Muestra nombre="Seccion / Cuentas">
           <SeccionCuentas />

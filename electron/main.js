@@ -24,6 +24,8 @@ const estado = {
   avisos: [],
   panelAbierto: false,
   configAbierta: false,
+  configSeccion: 'general', // pestaña con la que abre la configuración
+  nuevaAbierta: false,
   ladoLateral: 'izquierda',
   hayPantalla2: false,
 };
@@ -66,6 +68,7 @@ const MODULOS = {
 };
 const PANEL = { width: 340, height: 680 };
 const CONFIG_ANCHO = 520;
+const NUEVA_ANCHO = 400;
 
 // Pantalla 1 = la principal; Pantalla 2 = la otra. Sin segunda pantalla, se usa la 1.
 function pantalla(numero) {
@@ -110,6 +113,11 @@ function limitesConfig(origen, alto) {
   return { x: xLateral(origen, CONFIG_ANCHO), y: Math.round(wa.y + (wa.height - alto) / 2), width: CONFIG_ANCHO, height: alto };
 }
 
+// Nueva tarea: alineada con el borde superior del widget (y del módulo Hoy).
+function limitesNueva(origen, alto) {
+  return { x: xLateral(origen, NUEVA_ANCHO), y: origen.y, width: NUEVA_ANCHO, height: alto };
+}
+
 // Mueve una ventana en 250 ms con curva suave, salvo que Windows pida reducir animaciones.
 function animar(win, destino) {
   const inicio = win.getBounds();
@@ -133,6 +141,8 @@ let fondo = null;
 let panel = null;
 let config = null;
 let altoConfig = 816;
+let nueva = null;
+let altoNueva = 338;
 
 // Pega una ventana del widget; el fondo de pruebas se vuelve a mandar debajo de todo.
 function pegar(win) {
@@ -171,6 +181,7 @@ function colocarWidget() {
   for (const [nombre, win] of Object.entries(ventanas)) win.setBounds(limites(nombre, origen));
   if (panel) animar(panel, limitesPanel(origen));
   if (config) animar(config, limitesConfig(origen, altoConfig));
+  if (nueva) animar(nueva, limitesNueva(origen, altoNueva));
   actualizarAvisos(); // también cambian de esquina o de pantalla
 }
 
@@ -193,13 +204,26 @@ function abrirConfig() {
   });
 }
 
+// Nueva tarea (task-12): ventana normal, recibe foco para escribir. Esc, la X o Cancelar la cierran.
+function abrirNueva() {
+  nueva = ventanaCristal({ ruta: '/nueva-tarea', ...limitesNueva(origenWidget(), altoNueva) });
+  nueva.once('ready-to-show', () => nueva.show());
+  nueva.on('closed', () => {
+    nueva = null;
+    if (estado.nuevaAbierta) cambiar({ nuevaAbierta: false });
+  });
+}
+
 // Aplica a las ventanas lo que cambió, guarda lo guardable y avisa a todas.
 function cambiar(parcial) {
   const antes = { ...estado, posiciones: { ...estado.posiciones } };
   Object.assign(estado, parcial);
   // Las ventanas laterales van una a la vez: abrir una cierra la otra (sección 16).
-  if (parcial.configAbierta) estado.panelAbierto = false;
-  if (parcial.panelAbierto) estado.configAbierta = false;
+  const laterales = ['panelAbierto', 'configAbierta', 'nuevaAbierta'];
+  for (const abierta of laterales.filter((l) => parcial[l])) {
+    for (const otra of laterales) if (otra !== abierta) estado[otra] = false;
+  }
+  if (parcial.configAbierta && !parcial.configSeccion) estado.configSeccion = 'general';
 
   if (estado.modo !== antes.modo) temaWindows();
   if (estado.horaVisible !== antes.horaVisible) {
@@ -217,6 +241,8 @@ function cambiar(parcial) {
   if (!estado.panelAbierto && panel) panel.close();
   if (estado.configAbierta && !config) abrirConfig();
   if (!estado.configAbierta && config) config.close();
+  if (estado.nuevaAbierta && !nueva) abrirNueva();
+  if (!estado.nuevaAbierta && nueva) nueva.close();
 
   actualizarAvisos();
   guardarConfiguracion(estado);
@@ -368,6 +394,10 @@ ipcMain.on('configuracion:alto', (_e, alto) => {
   altoConfig = Math.round(alto);
   if (config) animar(config, limitesConfig(origenWidget(), altoConfig));
 });
+ipcMain.on('nueva:alto', (_e, alto) => {
+  altoNueva = Math.round(alto);
+  if (nueva) nueva.setBounds(limitesNueva(origenWidget(), altoNueva));
+});
 ipcMain.on('pantallas:identificar', identificarPantallas);
 ipcMain.handle('escritorio:fondo', fondoDeEscritorio);
 ipcMain.on('catalogo:alternar', alternarCatalogo);
@@ -379,6 +409,15 @@ const MINUTOS_ENTRE_LECTURAS = 2;
 ipcMain.handle('notion:conectar', (_e, clave) => notion.conectar(clave));
 ipcMain.on('notion:desconectar', () => notion.desconectar());
 ipcMain.on('tarea:marcar', (_e, id, nuevoEstado) => notion.marcar(id, nuevoEstado));
+// Botón + (task-12): sin Notion conectado lleva a Configuración › Cuentas en vez del formulario.
+ipcMain.on('tarea:nueva', () => (estado.notion.conectada
+  ? cambiar({ nuevaAbierta: true })
+  : cambiar({ configAbierta: true, configSeccion: 'cuentas' })));
+ipcMain.handle('tarea:crear', async (_e, datos) => {
+  const resultado = await notion.crear(datos);
+  if (resultado.ok) cambiar({ nuevaAbierta: false });
+  return resultado;
+});
 
 // ---- Google Calendar, solo lectura (task-09) ----
 

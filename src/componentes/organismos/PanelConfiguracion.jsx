@@ -20,7 +20,9 @@ const POSICIONES = [
 // Panel / Configuración (sección 13 y 19): pestañas General y Cuentas. Los cambios se
 // aplican al instante, sin botón de guardar. La ventana toma el alto del contenido.
 export default function PanelConfiguracion({ estado }) {
-  const [seccion, setSeccion] = useState('general');
+  // Abre en la pestaña que pida el proceso principal (el botón + sin Notion lleva a Cuentas).
+  const [seccion, setSeccion] = useState(estado.configSeccion ?? 'general');
+  useEffect(() => setSeccion(estado.configSeccion ?? 'general'), [estado.configSeccion]);
   const [fondo, setFondo] = useState(null);
   const contenido = useRef(null);
   const posicion = estado.posiciones[estado.pantalla];

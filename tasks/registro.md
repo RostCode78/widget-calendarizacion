@@ -4,9 +4,9 @@
 
 ## Estado actual
 
-- **Última tarea completada:** `task-11.md` (pulido, arranque con Windows e instalador; aprobada por Rost, 2026-10-31)
+- **Última tarea completada:** `task-12.md` (crear tareas desde el widget, 2026-10-31)
 - **Tarea en curso:** ninguna
-- **Siguiente tarea por hacer:** `task-12.md` (crear tareas desde el widget). Es la última tarea creada.
+- **Siguiente tarea por hacer:** ninguna. `task-12.md` era la última; hay que preguntar a Rost qué sigue.
 
 ## Pendientes y problemas abiertos
 
@@ -25,10 +25,59 @@
 - [x] Borrar la carpeta `prueba-03/`: Rost la borró en el commit de task-05.
 - [ ] **Wallpaper Engine tras reiniciar el Explorador:** el widget se vuelve a pegar bien (comprobado: dueño = el nuevo escritorio, justo encima de él y visible), pero después del reinicio Wallpaper Engine se engancha dentro del escritorio de otra forma y, al pulsar Win+D, su imagen tapa el widget. Antes del reinicio Win+D funciona. Probablemente se arregla reiniciando Wallpaper Engine; no se probó para no tocar esa app. Revisar si vuelve a pasar.
 - [x] `task-05`, texto de ejemplo en un campo: Rost decidió que el texto de ejemplo (placeholder) va siempre en `ink-muted`, también con el campo enfocado ("¿Qué vas a hacer?" en Nueva tarea), para que no parezca texto ya escrito.
-- [ ] `task-12`: el Formulario / Nueva tarea trae su propia superficie con esquinas de 24 px, como en Figma. En su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`). El Aviso ya se resolvió así en task-10 (`aviso-ventana`).
+- [x] Superficies de 24 px en ventanas propias: el Aviso (task-10, `aviso-ventana`) y el Formulario / Nueva tarea (task-12, `nueva-ventana`) llenan su ventana con esquinas de ~8 px.
+- [x] `task-12`: Rost creó una tarea desde el widget instalado y llegó bien a su Notion.
 - [x] `task-11`: Rost reinició, revisó la casilla "Iniciar con Windows", usó el widget y lo aprobó.
 
 ## Historial
+
+### task-12 — Crear tareas desde el widget
+- **Fecha:** 2026-10-31
+- **Estado:** Completada.
+- **Decisiones de Rost:**
+  - El Día se elige de una lista de 7 días: hoy y los 6 siguientes, los mismos que lee el widget.
+  - Las horas van en un campo de 24 h que entiende "1930", "19:30" o "7:30 pm", y las flechas las mueven de 15 en 15 minutos.
+  - `DESIGN-SYSTEM.md` pasa a v0.15 (sección 20).
+- **Qué se hizo:**
+  - **Notion (`electron/notion.js`, `crearTarea`):** crea la página en "Tareas de carrera" con:
+    - Tarea.
+    - Estado "Pendiente".
+    - Fecha de trabajo: solo el día, o inicio y cierre con la zona horaria del equipo.
+  - **Sincronización (`electron/tareas.js`, `crear`):**
+    - La tarea nueva entra de inmediato en la lista y la copia local, y con eso se programan sus avisos (task-10).
+    - Después se hace una lectura, por si otra que ya iba en camino la pisaba.
+    - No hay cola para crear: si falla, el formulario conserva lo escrito.
+  - **Ventana lateral (`electron/main.js`):**
+    - Se abre del lado con más espacio, a 12 px, alineada con el borde superior del widget.
+    - Toma el alto del formulario.
+    - Es una a la vez con la lista y la configuración, y se mueve con el widget.
+    - El botón + sin Notion conectado abre la configuración en Cuentas.
+  - **Formulario (`NuevaTarea`):**
+    - Día con el átomo nuevo `CampoLista`: se ve como el campo de Figma, y Enter crea en vez de abrir la lista.
+    - Horas con `src/datos/horas.js`, con su prueba.
+    - Validación y errores en el lugar de la nota, en color de alerta.
+    - "Creando…" mientras espera.
+    - Se cierra con la X, Cancelar o Escape.
+- **Verificación:**
+  - `npm test`: 7 de 7, con 3 pruebas nuevas de horas.
+  - **Widget de prueba con Notion simulado:**
+    - El formulario coincide con la vista de Figma.
+    - Sin nombre avisa "Escribe el nombre de la tarea."; cierre 20:00 con inicio 20:30 avisa que el cierre debe ir después.
+    - "8:45 pm" quedó como 20:45, y la flecha abajo dos veces llevó 20:30 a 20:00.
+    - Al crear, se envió a Notion Tarea "Preparar entrega de EBAC", Pendiente, 2026-10-31 de 20:00 a 20:45 (-06:00). La ventana se cerró y la tarea apareció en Hoy.
+    - **Sin internet:** apareció "Sin conexión. Lo que escribiste sigue aquí; intenta de nuevo." con todo lo escrito ("Llamar al banco", Mañana). Al volver la conexión, Enter la creó con solo el día (2026-11-01).
+    - **Las 9 posiciones:** x = 716 (columna izquierda), 228 (centro) y 804 (derecha), y = borde superior del widget. Siempre completo dentro de la pantalla.
+    - **Sin Notion conectado:** el + abrió la configuración en la pestaña Cuentas.
+  - Instalador vuelto a crear y reinstalado con estos cambios.
+- **Qué falló:**
+  - En la primera prueba, Enter en el campo Día abría la lista en vez de crear, y la lista abierta salía blanca con texto claro en modo oscuro. Las dos cosas quedaron corregidas y probadas.
+  - En la prueba de la fila de abajo, el primer clic falló porque el área útil de esa pantalla mide 1080 px y el widget estaba en y = 540, no en 492. No es un fallo del widget.
+- **Con el Notion real:**
+  - Rost creó "Jugar GTA V" para hoy de 20:05 a 20:10 desde el widget instalado.
+  - En Notion quedó en "Tareas de carrera", Pendiente, con Fecha de trabajo de 20:05 a 20:10 (hora de Monterrey). La consulta se hizo aparte.
+  - El widget la mostró en Hoy, y a las 20:05 apareció su aviso "Hora de iniciar" con "Notion · 20:05 – 20:10".
+  - La página también tiene "Cuadrante: 1 Urgente e importante". El widget no manda ese campo; lo puso Notion, quizá con una plantilla o un valor por defecto de la base (no se revisó cuál).
+- **Qué falta:** nada. Era la última tarea creada.
 
 ### task-11 — Pulido, arranque con Windows e instalador
 - **Fecha:** 2026-10-31

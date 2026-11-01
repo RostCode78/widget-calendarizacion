@@ -36,3 +36,14 @@ export function cuadriculaDelMes(anio, mes) {
   const lunes = sumarDias(primero, -((primero.getDay() + 6) % 7));
   return Array.from({ length: 42 }, (_, i) => sumarDias(lunes, i));
 }
+
+// Días que se pueden elegir al crear una tarea (task-12): hoy y los 6 siguientes, los mismos que
+// lee el widget. [{ valor: "AAAA-MM-DD", texto: "Hoy" | "Mañana" | "Lun 2 nov" }]
+export function diasParaElegir(hoy = new Date()) {
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = sumarDias(hoy, i);
+    const valor = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const texto = i === 0 ? 'Hoy' : i === 1 ? 'Mañana' : `${mayuscula(sinPunto(diaSemanaCorto.format(d)))} ${d.getDate()} ${sinPunto(mesCorto.format(d))}`;
+    return { valor, texto };
+  });
+}

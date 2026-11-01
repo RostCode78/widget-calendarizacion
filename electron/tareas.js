@@ -2,7 +2,7 @@
 // de estado que no se pudieron enviar. La clave vive en el Administrador de credenciales.
 import { leerJson, escribirJson } from './archivos.js';
 import { borrarSecreto, guardarSecreto, leerSecreto } from './credenciales.js';
-import { buscarBase, cambiarEstado, diaLocal, ErrorNotion, leerTareas } from './notion.js';
+import { buscarBase, cambiarEstado, crearTarea, diaLocal, ErrorNotion, leerTareas } from './notion.js';
 
 const SECRETO = 'Calendarizacion/Notion';
 const DIAS = 7; // hoy y los próximos días
@@ -87,6 +87,23 @@ export function crearSincronizador(avisar) {
       escribirJson('notion-tareas.json', copia);
       escribirJson('notion-pendientes.json', pendientes);
       publicar();
+    },
+
+    // Nueva tarea (task-12). No hay cola: si falla, el formulario conserva lo escrito y avisa.
+    // Si funciona, la tarea aparece de inmediato (con sus avisos) sin esperar a la siguiente lectura.
+    async crear(datos) {
+      const clave = leerSecreto(SECRETO);
+      if (!clave || !copia.base) return { error: 'clave' };
+      try {
+        const tarea = await crearTarea(clave, copia.base.id, datos);
+        copia = { ...copia, tareas: [...copia.tareas, tarea] };
+        escribirJson('notion-tareas.json', copia);
+        publicar();
+        sincronizar(); // por si una lectura que ya iba en camino la pisa
+        return { ok: true };
+      } catch (e) {
+        return { error: e instanceof ErrorNotion ? e.tipo : 'servicio' };
+      }
     },
 
     // Se ve al instante y se guarda en la cola; Notion lo recibe ahora o cuando vuelva la conexión.
