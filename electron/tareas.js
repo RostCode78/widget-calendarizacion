@@ -29,6 +29,7 @@ export function crearSincronizador(avisar) {
       try {
         await cambiarEstado(clave, id, estado);
         copia.tareas = copia.tareas.map((t) => (t.id === id ? conEstado(t, estado) : t));
+        escribirJson('notion-tareas.json', copia); // por si la lectura que sigue falla
       } catch (e) {
         // Si la página ya no existe o dejó de estar compartida, el cambio se descarta; otros errores esperan.
         if (!(e instanceof ErrorNotion && e.tipo === 'sin-base')) throw e;

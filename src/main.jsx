@@ -10,6 +10,7 @@ import ModuloSemana from './componentes/organismos/ModuloSemana.jsx';
 import PanelHoy from './componentes/organismos/PanelHoy.jsx';
 import PanelConfiguracion from './componentes/organismos/PanelConfiguracion.jsx';
 import Cristal from './componentes/atomos/Cristal.jsx';
+import { AvisoFin, AvisoInicio } from './componentes/organismos/Aviso.jsx';
 import Fondo from './pruebas/Fondo.jsx';
 import Catalogo from './pruebas/Catalogo.jsx';
 
@@ -38,9 +39,19 @@ const vistas = {
   '/catalogo': () => <Catalogo />,
 };
 
+// Aviso flotante (task-10): la ruta trae la clave del aviso ("/aviso/<tarea>-inicio").
+function VentanaAviso({ estado, clave }) {
+  const aviso = estado.avisos.find((a) => a.clave === clave);
+  if (!aviso) return null;
+  const props = { className: 'aviso-ventana', titulo: aviso.texto, hora: aviso.hora, alAceptar: () => window.widget.aceptarAviso(clave) };
+  return aviso.tipo === 'inicio' ? <AvisoInicio rango={aviso.rango} {...props} /> : <AvisoFin {...props} />;
+}
+
 function Vista() {
   const estado = useEstado();
-  const vista = vistas[location.hash.slice(1)];
+  const ruta = location.hash.slice(1);
+  if (estado && ruta.startsWith('/aviso/')) return <VentanaAviso estado={estado} clave={ruta.slice('/aviso/'.length)} />;
+  const vista = vistas[ruta];
   return estado && vista ? vista(estado) : null;
 }
 

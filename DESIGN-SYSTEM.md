@@ -1,6 +1,6 @@
 # Design System — Widget Calendarizacion
 
-**Versión:** 0.12 (Google Calendar conectado, task-09)
+**Versión:** 0.13 (avisos de inicio y de fin, task-10)
 **Estado:** los valores son un punto de partida. Se validan y ajustan en `task-01.md` con ejemplos reales. Lo que no esté aquí no está decidido.
 
 ## 1. Principios
@@ -104,7 +104,7 @@ Filas de tarea: círculo vacío, texto, hora a la derecha. Una tarea completada 
 
 | Propiedad | Valor |
 |---|---|
-| Tamaño | pequeño, unos 320 × 120 px |
+| Tamaño | pequeño, 320 × 128 px (como en Figma) |
 | Posición | esquina superior a 32 px del borde, sobre el resto de ventanas. Lado según la regla de avisos de la sección 16. |
 | Contenido | dos variantes, `Aviso / Inicio` y `Aviso / Fin`: ver sección 17 |
 | Color | cristal con borde y botón en `alert` |
@@ -209,7 +209,7 @@ Margen al borde: 64 px. La fila de abajo respeta la barra de tareas.
 Reglas:
 - **Orden interno fijo:** en las 9 posiciones el widget se arma igual (columna del calendario a la izquierda, columna de Hoy y Esta semana a la derecha). Lo único que cambia es dónde se coloca.
 - **Ventanas laterales** (lista abierta, configuración y Nueva tarea): se abren hacia el lado con más espacio, a 12 px del widget. Reglas completas y medidas más abajo.
-- **Avisos:** esquina superior derecha, salvo en la columna derecha (posiciones 3, 6 y 9), donde pasan a la esquina superior izquierda. Así no tapan el widget aunque se apilen varios (tres avisos llegan hasta y = 416 y el widget de la posición 6 empieza en y = 302).
+- **Avisos:** esquina superior derecha, salvo en la columna derecha (posiciones 3, 6 y 9), donde pasan a la esquina superior izquierda. Así no tapan el widget aunque se apilen varios (en esas posiciones los avisos quedan en x = 32–352 y el widget empieza en x = 1216; en las demás, los avisos quedan en x = 1568–1888 y el widget termina antes de x = 1280).
 - **Pantalla:** la posición se guarda por pantalla (1 o 2).
 
 ### Ventanas laterales: configuración, lista abierta y Nueva tarea
@@ -251,8 +251,15 @@ Decisión de Rost: **aceptar un aviso = empezar la tarea.** Las tareas con hora 
 
 ### Estado de fila "en curso"
 - Variante `estado=en-curso` del componente Tarea: fondo `accent/soft`, círculo relleno `accent` con ícono play en `ink/on-accent`, y la hora en `accent`.
-- La hora muestra el **rango** ("10:00 – 11:30") cuando la tarea tiene inicio y cierre.
+- La hora muestra el **rango** ("10:00 – 11:30") cuando la tarea tiene inicio y cierre. Una tarea **hecha** también muestra el rango, como el paso 4 del tablero; una pendiente, solo la hora de inicio (decidido por Rost en task-10).
 - Vistas: `Escritorio / Aviso` (dos avisos apilados) y `Escritorio / Tarea en curso`.
+
+### Cuándo aparece cada aviso (task-10)
+- Solo avisan las tareas de **hoy** que tienen hora y no están hechas. Las de días anteriores siguen en la lista, sin aviso.
+- Aviso de inicio: desde la hora de inicio, mientras la tarea no esté en curso.
+- Aviso de fin: desde la hora de cierre, mientras la tarea no esté hecha. Si el de inicio no se aceptó, el de fin lo reemplaza: un solo aviso por tarea (decidido por Rost).
+- Si el equipo estuvo apagado o dormido, al volver aparecen los avisos de hoy que sigan pendientes. Un aviso sin aceptar sigue ahí aunque se cierre y se abra el widget.
+- Medida: 320 × 128 px, como en Figma. Se apilan en orden de hora.
 
 ### Tareas con una sola hora (decidido)
 - Solo tienen aviso de inicio. Se marcan como hechas desde la lista.

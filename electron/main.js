@@ -6,6 +6,7 @@ import { pegarAlEscritorio, MENSAJE_EXPLORADOR } from './escritorio.js';
 import { leerConfiguracion, guardarConfiguracion } from './configuracion.js';
 import { crearSincronizador } from './tareas.js';
 import { crearSincronizadorCalendario } from './calendario.js';
+import { avisosPendientes } from './avisos.js';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const devUrl = process.env.VITE_DEV_SERVER_URL;
@@ -20,6 +21,7 @@ const estado = {
   notion: { conectada: false, base: null, error: null, actualizado: null },
   eventos: [],
   google: { conectada: false, calendario: null, error: null, actualizado: null },
+  avisos: [],
   panelAbierto: false,
   configAbierta: false,
   ladoLateral: 'izquierda',
@@ -215,9 +217,61 @@ function cambiar(parcial) {
   if (estado.configAbierta && !config) abrirConfig();
   if (!estado.configAbierta && config) config.close();
 
+  actualizarAvisos();
   guardarConfiguracion(estado);
-  for (const w of BrowserWindow.getAllWindows()) w.webContents.send('estado', estado);
+  difundir();
 }
+
+const difundir = () => {
+  for (const w of BrowserWindow.getAllWindows()) w.webContents.send('estado', estado);
+};
+
+// ---- Avisos de inicio y de fin (task-10, secciones 8, 16 y 17) ----
+
+const AVISO = { width: 320, height: 128 };
+const ventanasAviso = new Map(); // clave del aviso → su ventana
+
+// Esquina superior derecha a 32 px; con el widget en la columna derecha (3, 6, 9), la izquierda.
+// Varios avisos se apilan hacia abajo con 12 px de separación.
+function limitesAviso(i) {
+  const wa = pantalla(estado.pantalla).workArea;
+  const x = origenWidget().columna === 2 ? wa.x + 32 : wa.x + wa.width - 32 - AVISO.width;
+  return { x, y: wa.y + 32 + i * (AVISO.height + 12), ...AVISO };
+}
+
+// Abre, acomoda y cierra las ventanas de aviso según las tareas y la hora. Un aviso solo se va
+// cuando su tarea cambia de estado (al aceptarlo). Devuelve true si cambió la lista.
+function actualizarAvisos() {
+  const avisos = avisosPendientes(estado.tareas);
+  const cambio = avisos.map((a) => a.clave).join() !== estado.avisos.map((a) => a.clave).join();
+  estado.avisos = avisos;
+  for (const [clave, win] of ventanasAviso) {
+    if (avisos.some((a) => a.clave === clave)) continue;
+    win.close();
+    ventanasAviso.delete(clave);
+  }
+  avisos.forEach((aviso, i) => {
+    const lugar = limitesAviso(i);
+    const abierta = ventanasAviso.get(aviso.clave);
+    if (abierta) {
+      const { x, y } = abierta.getBounds();
+      if (x !== lugar.x || y !== lugar.y) animar(abierta, lugar);
+      return;
+    }
+    // Encima de todo, pero sin foco: no interrumpe lo que Rost esté escribiendo.
+    const win = ventanaCristal({ ruta: `/aviso/${aviso.clave}`, focusable: false, ...lugar });
+    win.setAlwaysOnTop(true, 'screen-saver');
+    win.once('ready-to-show', () => win.showInactive());
+    ventanasAviso.set(aviso.clave, win);
+  });
+  return cambio;
+}
+
+// Aceptar el aviso de inicio empieza la tarea; el de fin la termina. Se escribe en Notion.
+ipcMain.on('aviso:aceptar', (_e, clave) => {
+  const aviso = estado.avisos.find((a) => a.clave === clave);
+  if (aviso) notion.marcar(aviso.id, aviso.tipo === 'inicio' ? 'enCurso' : 'hecha');
+});
 
 // "Identificar pantallas": un número grande en cada monitor durante 3 segundos.
 function identificarPantallas() {
@@ -323,6 +377,8 @@ app.whenReady().then(() => {
   calendario.publicar();
   sincronizarTodo();
   setInterval(sincronizarTodo, MINUTOS_ENTRE_LECTURAS * 60 * 1000);
+  // Los avisos se revisan cada 15 segundos: así aparecen a su hora, también al despertar el equipo.
+  setInterval(() => actualizarAvisos() && difundir(), 15 * 1000);
   powerMonitor.on('resume', sincronizarTodo);
   powerMonitor.on('unlock-screen', sincronizarTodo);
   screen.on('display-added', actualizarPantallas);

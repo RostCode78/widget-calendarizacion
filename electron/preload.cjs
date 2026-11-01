@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('widget', {
   desconectarNotion: () => ipcRenderer.send('notion:desconectar'),
   conectarGoogle: () => ipcRenderer.invoke('google:conectar'),
   desconectarGoogle: () => ipcRenderer.send('google:desconectar'),
+  aceptarAviso: (clave) => ipcRenderer.send('aviso:aceptar', clave),
   marcarTarea: (id, estado) => ipcRenderer.send('tarea:marcar', id, estado),
   alternarCatalogo: () => ipcRenderer.send('catalogo:alternar'),
   cerrar: () => ipcRenderer.send('app:cerrar'),

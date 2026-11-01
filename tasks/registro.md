@@ -4,9 +4,9 @@
 
 ## Estado actual
 
-- **Última tarea completada:** `task-09.md` (conectar con Google Calendar, 2026-10-31)
+- **Última tarea completada:** `task-10.md` (avisos de inicio y de fin, 2026-10-31)
 - **Tarea en curso:** ninguna
-- **Siguiente tarea por hacer:** `task-10.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
+- **Siguiente tarea por hacer:** `task-11.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
 
 ## Pendientes y problemas abiertos
 
@@ -28,6 +28,46 @@
 - [ ] `task-07` y `task-12`: el Aviso y el Formulario / Nueva tarea traen su propia superficie con esquinas de 24 px, como en Figma. Cuando vivan en su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`).
 
 ## Historial
+
+### task-10 — Avisos de inicio y de fin
+- **Fecha:** 2026-10-31
+- **Estado:** Completada
+- **Decisiones de Rost:**
+  - Si llega la hora de cierre y el aviso de inicio no se aceptó, queda solo el aviso de fin.
+  - La tarea hecha muestra su rango de horas, como el paso 4 del tablero "Flujo de una tarea".
+  - `DESIGN-SYSTEM.md` pasa a v0.13 (secciones 8, 16 y 17).
+- **Qué se hizo:**
+  - **Regla (`electron/avisos.js`):** decide qué avisos tocan a partir del estado de cada tarea, sin archivo propio:
+    - Solo avisan las tareas de hoy, con hora y sin hacer.
+    - Inicio: desde la hora de inicio, mientras la tarea no esté en curso.
+    - Fin: desde la hora de cierre, mientras no esté hecha.
+    - Como sale del estado de Notion (y de la cola sin internet), un aviso sin aceptar sigue ahí tras cerrar el widget o apagar el equipo.
+  - **Prueba automática (`electron/avisos.test.js`, `npm test`):** cubre los 4 casos: inicio y cierre, solo inicio, sin hora y computadora dormida (lo de ayer no avisa y la hora de cierre ya pasada manda). Usa el corredor de pruebas de Node, sin dependencias nuevas.
+  - **Ventanas (`electron/main.js`):**
+    - Una ventana por aviso, de 320 × 128, siempre encima, sin foco.
+    - Se colocan arriba a 32 px del borde de la pantalla elegida: a la derecha, o a la izquierda en las posiciones 3, 6 y 9.
+    - Se apilan con 12 px de separación y se reacomodan con la animación de 250 ms.
+    - Se revisan cada 15 segundos y cada vez que cambian las tareas.
+  - **Aceptar:** Iniciar escribe "En curso" en Notion y Terminar escribe "Hecha", por la misma cola que el resto, así que sirve sin internet.
+  - **Vista:** Aviso / Inicio y Aviso / Fin llenan su ventana (esquinas de ~8 px) y entran con un desvanecido de 250 ms, que se apaga si Windows pide reducir animaciones. Los títulos largos se cortan con "…".
+  - **Arreglo de task-08 (`electron/tareas.js`):** cuando Notion recibía un cambio de estado pero la lectura siguiente fallaba, el cambio no quedaba en la copia local, y tras reiniciar sin internet la tarea volvía a su estado anterior. Ahora se guarda en cuanto Notion lo confirma.
+- **Verificación:**
+  - **Prueba automática:** `npm test`, 4 de 4.
+  - **Widget real con tareas de prueba y Notion simulado:** en una carpeta aparte; no se tocó tu Notion.
+    - Aparecieron dos avisos de inicio apilados a la izquierda (posición 6), sin quitar el foco a la ventana activa.
+    - **Iniciar:** la fila quedó resaltada con play y "18:59 – 19:03", se envió "En curso" y el otro aviso subió a su lugar.
+    - **Cerrar y abrir el widget:** el aviso sin aceptar volvió y el aceptado no.
+    - **A la hora de cierre:** apareció "Hora de terminar" y, a su hora, el inicio de otra tarea. Fueron tres avisos apilados.
+    - **Terminar:** la tarea quedó hecha con palomita y su rango, y se envió "Hecha".
+    - **Tarea con una sola hora:** Iniciar la dejó en curso, sin aviso de fin; tocar su círculo en la lista la marcó como hecha.
+    - La tarea de ayer y la tarea sin hora no avisaron.
+    - **Posiciones 2, 3 y 9:** a la derecha en la 2 y a la izquierda en la 3 y la 9. En ninguna tapan el widget; en las demás posiciones vale la misma cuenta (sección 16).
+    - **Pantalla 2:** los avisos salen en su esquina.
+- **Qué falló:**
+  - El fallo de la copia local de task-08 que se describe arriba; se encontró en esta prueba y quedó corregido.
+  - No se probó con el equipo dormido de verdad. Ese caso lo cubren la prueba automática y la revisión cada 15 segundos, que también corre al despertar.
+  - No se probó con tu Notion real, porque tus tareas de hoy no tienen hora.
+- **Qué falta:** nada de esta tarea. Sigue `task-11`.
 
 ### task-09 — Conectar con el calendario (eventos)
 - **Fecha:** 2026-10-31

@@ -23,11 +23,11 @@ export function Progreso({ tareas }) {
   );
 }
 
-// Una fila de tarea. El rango de horas solo se muestra mientras está en curso (sección 17).
-// Las tareas de Notion (con `id`) se marcan desde la lista: hecha ↔ pendiente.
+// Una fila de tarea. En curso y hecha muestran el rango de horas; pendiente, solo el inicio
+// (tablero "Flujo de una tarea"). Las de Notion (con `id`) se marcan desde la lista: hecha ↔ pendiente.
 export function FilaTarea({ tarea }) {
   const estado = tarea.hecha ? 'hecha' : tarea.enCurso ? 'en-curso' : 'pendiente';
-  const hora = tarea.enCurso && tarea.fin ? `${tarea.inicio} – ${tarea.fin}` : tarea.inicio;
+  const hora = estado !== 'pendiente' && tarea.fin ? `${tarea.inicio} – ${tarea.fin}` : tarea.inicio;
   const alMarcar = tarea.id && (() => window.widget.marcarTarea(tarea.id, tarea.hecha ? 'pendiente' : 'hecha'));
   return <Tarea texto={tarea.texto} hora={hora} estado={estado} alMarcar={alMarcar || undefined} />;
 }
