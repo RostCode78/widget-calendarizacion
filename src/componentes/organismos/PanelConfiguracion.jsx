@@ -51,7 +51,7 @@ export default function PanelConfiguracion({ estado }) {
           </button>
         </div>
         <div className="config-pestanas"><Pestanas seccion={seccion} alCambiar={setSeccion} /></div>
-        {seccion === 'general' ? <General estado={estado} posicion={posicion} fondo={fondo} /> : <Cuentas notion={estado.notion} />}
+        {seccion === 'general' ? <General estado={estado} posicion={posicion} fondo={fondo} /> : <Cuentas notion={estado.notion} google={estado.google} />}
       </div>
     </Cristal>
   );
@@ -121,9 +121,33 @@ const ERRORES_NOTION = {
   servicio: 'Notion no respondió. Intenta de nuevo en un momento.',
 };
 
+// Mensajes de Google Calendar. La conexión pasa por el navegador y no tiene campo propio.
+const ERRORES_GOOGLE = {
+  cancelada: 'No se completó el permiso en Google. Pulsa Conectar para intentarlo de nuevo.',
+  cliente: 'Ese archivo no es un cliente de Google de tipo "App de escritorio". Descárgalo de nuevo desde Google Cloud.',
+  clave: 'Google rechazó el cliente. Revisa que siga activo en Google Cloud y vuelve a elegir su archivo.',
+  'sin-conexion': 'Sin conexión. Revisa tu internet e intenta de nuevo.',
+  servicio: 'Google no respondió. Intenta de nuevo en un momento.',
+};
+
 // Pestaña Cuentas. Notion (task-08): la clave se valida y se guarda en el Administrador de
-// credenciales de Windows desde el proceso principal; aquí solo pasa de paso. Google llega en task-09.
-function Cuentas({ notion }) {
+// credenciales de Windows desde el proceso principal; aquí solo pasa de paso. Google (task-09):
+// Conectar pide el archivo del cliente (solo la primera vez) y abre el permiso en el navegador.
+function Cuentas({ notion, google }) {
+  const [conectandoGoogle, setConectandoGoogle] = useState(false);
+  const [errorGoogle, setErrorGoogle] = useState(null);
+  const conectarGoogle = async () => {
+    if (conectandoGoogle) return;
+    setConectandoGoogle(true);
+    setErrorGoogle(null);
+    const resultado = await window.widget.conectarGoogle();
+    setConectandoGoogle(false);
+    if (!resultado.ok) setErrorGoogle(resultado.error);
+  };
+  const filaGoogle = google.conectada
+    ? { estado: 'conectada', detalle: `Calendario: ${google.calendario ?? 'principal'}`, alDesconectar: () => window.widget.desconectarGoogle() }
+    : { estado: 'sin-conectar', alConectar: conectarGoogle, conectando: conectandoGoogle, error: ERRORES_GOOGLE[errorGoogle] };
+
   const [pegando, setPegando] = useState(false);
   const [clave, setClave] = useState('');
   const [conectando, setConectando] = useState(false);
@@ -148,5 +172,5 @@ function Cuentas({ notion }) {
         estado: pegando ? 'pegar-clave' : 'sin-conectar',
         clave, alCambiarClave: setClave, alConectar: conectar, conectando, error: ERRORES_NOTION[error],
       };
-  return <SeccionCuentas notion={filaNotion} />;
+  return <SeccionCuentas notion={filaNotion} google={filaGoogle} />;
 }

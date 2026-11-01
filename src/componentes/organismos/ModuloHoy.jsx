@@ -3,7 +3,7 @@ import '../atomos/atomos.css';
 import Cristal from '../atomos/Cristal.jsx';
 import BotonIcono from '../atomos/BotonIcono.jsx';
 import { cambiar } from '../../estado.js';
-import { ChipPendientes, FilaTarea, Progreso, TituloHoy, ordenarPorHora } from './hoy.jsx';
+import { ChipPendientes, FilaTarea, Progreso, TituloModulo, ordenarPorHora } from './hoy.jsx';
 import './modulos.css';
 
 const VISIBLES = 4;
@@ -21,7 +21,7 @@ export default function ModuloHoy({ tareas, aviso, panelAbierto, ladoPanel, alNu
   return (
     <Cristal className="modulo modulo-hoy">
       <div className="modulo-encabezado">
-        <TituloHoy aviso={aviso} />
+        <TituloModulo aviso={aviso} />
         <span className="modulo-derecha">
           <ChipPendientes tareas={lista} />
           <BotonIcono icono="mas" etiqueta="Nueva tarea" className="hoy-nueva" onClick={alNuevaTarea} />

@@ -4,9 +4,9 @@
 
 ## Estado actual
 
-- **Última tarea completada:** `task-08.md` (conectar con Notion, 2026-10-31)
+- **Última tarea completada:** `task-09.md` (conectar con Google Calendar, 2026-10-31)
 - **Tarea en curso:** ninguna
-- **Siguiente tarea por hacer:** `task-09.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
+- **Siguiente tarea por hacer:** `task-10.md`. Hay tareas hasta `task-12.md`; se hacen en orden.
 
 ## Pendientes y problemas abiertos
 
@@ -28,6 +28,36 @@
 - [ ] `task-07` y `task-12`: el Aviso y el Formulario / Nueva tarea traen su propia superficie con esquinas de 24 px, como en Figma. Cuando vivan en su propia ventana, Windows dibuja esquinas de ~8 px, así que ahí la superficie tiene que llenar la ventana (como el átomo `Cristal`).
 
 ## Historial
+
+### task-09 — Conectar con el calendario (eventos)
+- **Fecha:** 2026-10-31
+- **Estado:** Completada
+- **Decisiones de Rost:** solo el calendario principal (`ros.tunales@gmail.com`), sin los de feriados; conexión autorizando en el navegador. La app de Google quedó **publicada sin verificar** (para que el permiso no venza cada 7 días), con su portafolio como página principal y una política de privacidad en `rost.aztlanapp.com`. `DESIGN-SYSTEM.md` pasa a v0.12 (sección 19).
+- **Qué se hizo:**
+  - **Google (`electron/google.js`):**
+    - Permiso de solo lectura (`calendar.events.readonly`), autorizado en el navegador con redirección local y PKCE.
+    - Solo se guarda el permiso de renovación, en el Administrador de credenciales; el acceso se pide al vuelo.
+    - Lee los eventos (los repetidos ya separados), omite los cancelados y distingue "sin conexión", "clave", "servicio", "cancelada" y "cliente".
+    - Desconectar revoca el permiso en Google.
+  - **Sincronización (`electron/calendario.js`):** lee 12 semanas desde el lunes de la cuadrícula del mes, cada 2 minutos y al despertar o desbloquear el equipo. Guarda lo último leído en `google-eventos.json` para usarlo sin internet.
+  - **Archivos (`electron/archivos.js`):** lectura y escritura de JSON compartida con la configuración y Notion.
+  - **Cuentas:** Conectar pide el archivo del cliente (solo la primera vez) y abre el navegador. La fila queda "Conectada · Calendario: ros.tunales@gmail.com". Los errores se explican bajo la fila.
+  - **Widget:**
+    - **Esta semana** muestra los eventos reales de los próximos 7 días (2 y "+N más"), con su aviso discreto si algo falla.
+    - **Mini calendario:** punto en los días con evento.
+    - **Próximo** (con la hora oculta) muestra el siguiente evento que no ha pasado. Los de todo el día dicen "Todo el día".
+- **Verificación:**
+  - **Simulada:** Google simulado en una app de Electron aislada: archivo del cliente correcto y equivocado, PKCE, permiso negado, eventos con hora, de todo el día y cancelados, y sin internet.
+  - **Con tu calendario real:**
+    - Los 17 eventos guardados (29 oct – 5 nov) coinciden uno a uno con el calendario consultado aparte (título, día y hora).
+    - Esta semana muestra "31 oct – 6 nov", Bloque de carrera (sáb 31, 10:00), Proyectos personales (dom 1, 10:00) y "+10 más" (12 eventos en esos 7 días).
+    - El mini calendario marca del 29 de octubre al 5 de noviembre.
+    - Con la hora oculta, Próximo muestra "Proyectos personales · Domingo · 10:00".
+- **Qué falló:**
+  - Para publicar la app, Google pidió página principal y política de privacidad. Se resolvió con el portafolio de Rost.
+  - En la prueba de "Ocultar hora" la hora quedó oculta, porque uno de los clics automáticos no cayó en el interruptor mientras Rost usaba la pantalla. Rost la vuelve a activar en Configuración.
+  - No se probó un error real de Google, como quitar el permiso desde la cuenta; los errores se probaron con Google simulado.
+- **Qué falta:** nada de esta tarea. "Esta semana" incluye los eventos de hoy que ya pasaron (cuenta los 7 días desde hoy, como dice la sección 7). Sigue `task-10`.
 
 ### task-08 — Conectar con Notion (tareas)
 - **Fecha:** 2026-10-31

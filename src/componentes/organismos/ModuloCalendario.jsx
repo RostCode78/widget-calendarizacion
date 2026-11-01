@@ -5,20 +5,25 @@ import '../moleculas/moleculas.css';
 import Cristal from '../atomos/Cristal.jsx';
 import Dia from '../atomos/Dia.jsx';
 import { useAhora } from '../../estado.js';
-import { cuadriculaDelMes, diaCorto, diaLargo, mesYAnio, mismoDia } from '../../datos/fechas.js';
-import { eventosDesde } from '../../datos/ejemplo.js';
+import { cuadriculaDelMes, diaCorto, diaLargo, horaCorta, mesYAnio, mismoDia } from '../../datos/fechas.js';
 import './modulos.css';
 
 const SEMANA = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
+// El siguiente evento que no ha pasado: un día futuro, o hoy a una hora que aún no llega (o de todo el día).
+// `eventos` vienen ordenados por fecha y hora.
+function siguiente(eventos, ahora) {
+  const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+  return eventos.find((e) => e.fecha > hoy || (mismoDia(e.fecha, hoy) && (!e.hora || e.hora >= horaCorta(ahora)))) ?? null;
+}
+
 // Mini calendario: mes actual, hoy con el acento y un punto en los días con eventos.
 // Con la hora oculta ocupa toda la columna y suma el bloque "Próximo" (sección 13).
-export default function ModuloCalendario({ alto }) {
+export default function ModuloCalendario({ alto, eventos }) {
   const hoy = useAhora();
   const [desfase, setDesfase] = useState(0);
   const mes = new Date(hoy.getFullYear(), hoy.getMonth() + desfase, 1);
-  const eventos = eventosDesde(hoy);
-  const proximo = eventos.find((e) => e.fecha >= hoy) ?? null;
+  const proximo = siguiente(eventos, hoy);
 
   return (
     <Cristal className={`modulo modulo-calendario ${alto ? 'calendario-alto' : ''}`}>
@@ -57,7 +62,7 @@ export default function ModuloCalendario({ alto }) {
             </div>
             <span className="textos">
               <span className="texto-tarea">{proximo.texto}</span>
-              <span className="texto-detalle">{diaLargo(proximo.fecha)} · {proximo.hora}</span>
+              <span className="texto-detalle">{diaLargo(proximo.fecha)} · {proximo.hora || 'Todo el día'}</span>
             </span>
           </div>
         </div>

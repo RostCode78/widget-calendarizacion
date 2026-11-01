@@ -20,8 +20,9 @@ export default function FilaCuenta({ icono, nombre, detalle, estado = 'sin-conec
         <Chip estado={conectada ? 'conectada' : 'sin-conectar'} />
         {!pegarClave && (conectada
           ? <Boton tipo="secundario" onClick={alDesconectar}>Desconectar</Boton>
-          : <Boton onClick={alConectar}>Conectar</Boton>)}
+          : <Boton onClick={alConectar} disabled={conectando}>{conectando ? 'Conectando…' : 'Conectar'}</Boton>)}
       </div>
+      {!pegarClave && error && <p className="fila-cuenta-nota fila-cuenta-error texto-detalle" role="alert">{error}</p>}
       {pegarClave && (
         <>
           <p className={`fila-cuenta-nota texto-detalle ${error ? 'fila-cuenta-error' : ''}`} role={error ? 'alert' : undefined}>

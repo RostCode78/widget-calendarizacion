@@ -41,10 +41,19 @@ const AVISOS = {
 };
 export const avisoNotion = (notion) => (notion.conectada ? AVISOS[notion.error] : 'conecta Notion');
 
-export function TituloHoy({ aviso }) {
+// Lo mismo para "Esta semana" con Google Calendar (task-09).
+const AVISOS_GOOGLE = {
+  'sin-conexion': 'sin conexión',
+  servicio: 'Google no responde',
+  clave: 'vuelve a conectar Google',
+};
+export const avisoGoogle = (google) => (google.conectada ? AVISOS_GOOGLE[google.error] : 'conecta Google');
+
+// Título de módulo con su aviso discreto al lado ("Hoy · sin conexión").
+export function TituloModulo({ titulo = 'Hoy', aviso }) {
   return (
     <span className="hoy-titulo">
-      <span className="texto-titulo-modulo">Hoy</span>
+      <span className="texto-titulo-modulo">{titulo}</span>
       {aviso && <span className="texto-detalle hoy-aviso">· {aviso}</span>}
     </span>
   );

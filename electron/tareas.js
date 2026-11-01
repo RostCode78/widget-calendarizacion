@@ -1,28 +1,11 @@
 // Sincroniza las tareas de Notion: copia local para trabajar sin internet y cola de cambios
 // de estado que no se pudieron enviar. La clave vive en el Administrador de credenciales.
-import { app } from 'electron';
-import fs from 'node:fs';
-import path from 'node:path';
+import { leerJson, escribirJson } from './archivos.js';
 import { borrarSecreto, guardarSecreto, leerSecreto } from './credenciales.js';
 import { buscarBase, cambiarEstado, diaLocal, ErrorNotion, leerTareas } from './notion.js';
 
 const SECRETO = 'Calendarizacion/Notion';
 const DIAS = 7; // hoy y los próximos días
-const archivo = (nombre) => path.join(app.getPath('userData'), nombre);
-
-function leerJson(nombre, siNoHay) {
-  try {
-    return JSON.parse(fs.readFileSync(archivo(nombre), 'utf8'));
-  } catch {
-    return siNoHay;
-  }
-}
-
-function escribirJson(nombre, datos) {
-  const temporal = `${archivo(nombre)}.tmp`;
-  fs.writeFileSync(temporal, JSON.stringify(datos, null, 2));
-  fs.renameSync(temporal, archivo(nombre));
-}
 
 const estadoDe = (t) => (t.hecha ? 'hecha' : t.enCurso ? 'enCurso' : 'pendiente');
 const conEstado = (t, estado) => ({ ...t, hecha: estado === 'hecha', enCurso: estado === 'enCurso' });

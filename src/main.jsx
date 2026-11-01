@@ -1,8 +1,8 @@
 import { createRoot } from 'react-dom/client';
 import './estilos/tokens.css';
 import { useEstado } from './estado.js';
-import { tareasDeHoy } from './datos/ejemplo.js';
-import { avisoNotion } from './componentes/organismos/hoy.jsx';
+import { eventosDesde, tareasDeHoy } from './datos/ejemplo.js';
+import { avisoGoogle, avisoNotion } from './componentes/organismos/hoy.jsx';
 import ModuloHora from './componentes/organismos/ModuloHora.jsx';
 import ModuloCalendario from './componentes/organismos/ModuloCalendario.jsx';
 import ModuloHoy from './componentes/organismos/ModuloHoy.jsx';
@@ -18,12 +18,18 @@ const hoyLocal = () => new Date().toLocaleDateString('sv'); // "AAAA-MM-DD"
 const tareas = (e) => (e.escenario === 'real' ? e.tareas.filter((t) => t.dia === hoyLocal()) : tareasDeHoy(e.escenario));
 const aviso = (e) => (e.escenario === 'real' ? avisoNotion(e.notion) : null);
 
+// Eventos: los de Google Calendar ("AAAA-MM-DD" → fecha local), o los de ejemplo.
+const eventos = (e) => (e.escenario === 'real'
+  ? e.eventos.map((ev) => ({ ...ev, fecha: new Date(`${ev.dia}T00:00`) }))
+  : eventosDesde(new Date(new Date().toDateString())));
+const avisoSemana = (e) => (e.escenario === 'real' ? avisoGoogle(e.google) : null);
+
 // Cada ventana muestra una ruta. Los módulos esperan el estado compartido antes de pintarse.
 const vistas = {
   '/modulo/hora': () => <ModuloHora />,
-  '/modulo/calendario': (e) => <ModuloCalendario alto={!e.horaVisible} />,
+  '/modulo/calendario': (e) => <ModuloCalendario alto={!e.horaVisible} eventos={eventos(e)} />,
   '/modulo/hoy': (e) => <ModuloHoy tareas={tareas(e)} aviso={aviso(e)} panelAbierto={e.panelAbierto} ladoPanel={e.ladoLateral} />,
-  '/modulo/semana': () => <ModuloSemana />,
+  '/modulo/semana': (e) => <ModuloSemana eventos={eventos(e)} aviso={avisoSemana(e)} />,
   '/panel/hoy': (e) => <PanelHoy tareas={tareas(e)} aviso={aviso(e)} />,
   '/configuracion': (e) => <PanelConfiguracion estado={e} />,
   '/identificar/1': () => <Cristal className="identificar"><span className="texto-hora">1</span></Cristal>,

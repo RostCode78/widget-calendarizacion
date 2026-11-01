@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { pegarAlEscritorio, MENSAJE_EXPLORADOR } from './escritorio.js';
 import { leerConfiguracion, guardarConfiguracion } from './configuracion.js';
 import { crearSincronizador } from './tareas.js';
+import { crearSincronizadorCalendario } from './calendario.js';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const devUrl = process.env.VITE_DEV_SERVER_URL;
@@ -17,6 +18,8 @@ const estado = {
   escenario: 'real',
   tareas: [],
   notion: { conectada: false, base: null, error: null, actualizado: null },
+  eventos: [],
+  google: { conectada: false, calendario: null, error: null, actualizado: null },
   panelAbierto: false,
   configAbierta: false,
   ladoLateral: 'izquierda',
@@ -294,6 +297,16 @@ const MINUTOS_ENTRE_LECTURAS = 2;
 ipcMain.handle('notion:conectar', (_e, clave) => notion.conectar(clave));
 ipcMain.on('notion:desconectar', () => notion.desconectar());
 ipcMain.on('tarea:marcar', (_e, id, nuevoEstado) => notion.marcar(id, nuevoEstado));
+
+// ---- Google Calendar, solo lectura (task-09) ----
+
+const calendario = crearSincronizadorCalendario((parcial) => cambiar(parcial));
+ipcMain.handle('google:conectar', () => calendario.conectar());
+ipcMain.on('google:desconectar', () => calendario.desconectar());
+const sincronizarTodo = () => {
+  notion.sincronizar();
+  calendario.sincronizar();
+};
 ipcMain.on('app:cerrar', () => app.quit());
 
 // Una sola copia del widget a la vez.
@@ -305,12 +318,13 @@ app.whenReady().then(() => {
   if (pruebas) abrirPruebas();
   crearWidget();
   crearBandeja();
-  // Primero lo último leído (sirve sin internet); luego Notion, cada pocos minutos y al despertar el equipo.
+  // Primero lo último leído (sirve sin internet); luego Notion y Google, cada pocos minutos y al despertar el equipo.
   notion.publicar();
-  notion.sincronizar();
-  setInterval(notion.sincronizar, MINUTOS_ENTRE_LECTURAS * 60 * 1000);
-  powerMonitor.on('resume', notion.sincronizar);
-  powerMonitor.on('unlock-screen', notion.sincronizar);
+  calendario.publicar();
+  sincronizarTodo();
+  setInterval(sincronizarTodo, MINUTOS_ENTRE_LECTURAS * 60 * 1000);
+  powerMonitor.on('resume', sincronizarTodo);
+  powerMonitor.on('unlock-screen', sincronizarTodo);
   screen.on('display-added', actualizarPantallas);
   screen.on('display-removed', actualizarPantallas);
   screen.on('display-metrics-changed', colocarWidget);
